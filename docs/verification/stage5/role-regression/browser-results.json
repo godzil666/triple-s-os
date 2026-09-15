@@ -1,0 +1,179 @@
+{
+  "config": {
+    "argv": [
+      "C:\\Program Files\\nodejs\\node.exe",
+      "C:\\Users\\zil\\Documents\\Triple_S_OS\\node_modules\\@playwright\\test\\cli.js",
+      "test",
+      "tests/stage5.spec.ts",
+      "-g",
+      "admin updates"
+    ],
+    "configFile": "C:\\Users\\zil\\Documents\\Triple_S_OS\\playwright.config.ts",
+    "rootDir": "C:/Users/zil/Documents/Triple_S_OS/tests",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "C:/Users/zil/Documents/Triple_S_OS/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "",
+        "name": "",
+        "testDir": "C:/Users/zil/Documents/Triple_S_OS/tests",
+        "testIgnore": [
+          "**/domain/**",
+          "**/server/**"
+        ],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "docs/verification/stage5/role-regression/browser-results.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.63.0",
+    "workers": 1,
+    "webServer": {
+      "command": "npm run dev",
+      "url": "http://127.0.0.1:5174/api/health",
+      "reuseExistingServer": true,
+      "env": {
+        "SSS_WEB_PORT": "5174",
+        "SSS_API_PORT": "8788",
+        "SSS_DATA_DIR": ".local/auth-browser-tests"
+      }
+    }
+  },
+  "suites": [
+    {
+      "title": "stage5.spec.ts",
+      "file": "stage5.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "admin updates price and rate, customer buys, partner and owner retain historical commission",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 120000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 66985,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByTestId('voucher-code')\nExpected: visible\nTimeout: 15000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByTestId('voucher-code') with timeout 15000ms\u001b[22m\n\u001b[2m  - waiting for getByTestId('voucher-code')\u001b[22m\n",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByTestId('voucher-code')\nExpected: visible\nTimeout: 15000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByTestId('voucher-code') with timeout 15000ms\u001b[22m\n\u001b[2m  - waiting for getByTestId('voucher-code')\u001b[22m\n\n    at C:\\Users\\zil\\Documents\\Triple_S_OS\\tests\\stage5.spec.ts:11:602",
+                    "location": {
+                      "file": "C:\\Users\\zil\\Documents\\Triple_S_OS\\tests\\stage5.spec.ts",
+                      "column": 602,
+                      "line": 11
+                    },
+                    "snippet": "   9 |  const context=await browser.newContext({baseURL:testOrigin}),buyer=await context.newPage()\n  10 |  try{\n> 11 |   await buyer.goto('/mitra/demo-cisaat/paket');await buyer.getByRole('link',{name:'Pilih Reguler · 3 jam',exact:true}).click();await buyer.getByLabel('Nama customer').fill('Lintas Peran Tahap Lima');await buyer.getByLabel('Nomor WhatsApp').fill('081234567890');await buyer.getByRole('button',{name:'Review pesanan'}).click();await expect(buyer.getByText('Rp 9.000',{exact:false}).first()).toBeVisible();await buyer.getByRole('button',{name:'Buat pesanan simulasi'}).click();await buyer.getByRole('button',{name:'Simulasikan pembayaran sukses'}).click();await expect(buyer.getByTestId('voucher-code')).toBeVisible({timeout:15000})\n     |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          ^\n  12 |   const token=buyer.url().split('/').at(-1),detail=await(await buyer.request.get(`/api/customer/orders/${token}`)).json();expect(detail.order.amountRp).toBe(9000)\n  13 |   await loginAs(page,'mitra.cisaat');await page.goto(`/mitra-dashboard/penjualan/${detail.order.id}`);await expect(page.getByText('Rp 2.700',{exact:true})).toBeVisible();await page.goto('/admin');await expect(page.getByRole('heading',{name:'Akses tidak tersedia'})).toBeVisible()\n  14 |   await loginAs(page,'admin');await page.goto('/admin/paket');await page.getByLabel('Harga katalog ke seluruh mitra (Rp)').fill('11000');await page.getByRole('button',{name:'Simpan paket',exact:true}).click();await expect(page.getByRole('status')).toContainText('Perubahan tersimpan')"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "C:\\Users\\zil\\Documents\\Triple_S_OS\\tests\\stage5.spec.ts",
+                        "column": 602,
+                        "line": 11
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByTestId('voucher-code')\nExpected: visible\nTimeout: 15000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByTestId('voucher-code') with timeout 15000ms\u001b[22m\n\u001b[2m  - waiting for getByTestId('voucher-code')\u001b[22m\n\n\n   9 |  const context=await browser.newContext({baseURL:testOrigin}),buyer=await context.newPage()\n  10 |  try{\n> 11 |   await buyer.goto('/mitra/demo-cisaat/paket');await buyer.getByRole('link',{name:'Pilih Reguler · 3 jam',exact:true}).click();await buyer.getByLabel('Nama customer').fill('Lintas Peran Tahap Lima');await buyer.getByLabel('Nomor WhatsApp').fill('081234567890');await buyer.getByRole('button',{name:'Review pesanan'}).click();await expect(buyer.getByText('Rp 9.000',{exact:false}).first()).toBeVisible();await buyer.getByRole('button',{name:'Buat pesanan simulasi'}).click();await buyer.getByRole('button',{name:'Simulasikan pembayaran sukses'}).click();await expect(buyer.getByTestId('voucher-code')).toBeVisible({timeout:15000})\n     |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          ^\n  12 |   const token=buyer.url().split('/').at(-1),detail=await(await buyer.request.get(`/api/customer/orders/${token}`)).json();expect(detail.order.amountRp).toBe(9000)\n  13 |   await loginAs(page,'mitra.cisaat');await page.goto(`/mitra-dashboard/penjualan/${detail.order.id}`);await expect(page.getByText('Rp 2.700',{exact:true})).toBeVisible();await page.goto('/admin');await expect(page.getByRole('heading',{name:'Akses tidak tersedia'})).toBeVisible()\n  14 |   await loginAs(page,'admin');await page.goto('/admin/paket');await page.getByLabel('Harga katalog ke seluruh mitra (Rp)').fill('11000');await page.getByRole('button',{name:'Simpan paket',exact:true}).click();await expect(page.getByRole('status')).toContainText('Perubahan tersimpan')\n    at C:\\Users\\zil\\Documents\\Triple_S_OS\\tests\\stage5.spec.ts:11:602"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-13T09:18:32.383Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "C:\\Users\\zil\\Documents\\Triple_S_OS\\test-results\\stage5-admin-updates-price-a95fa-etain-historical-commission\\test-failed-1.png"
+                    },
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "C:\\Users\\zil\\Documents\\Triple_S_OS\\test-results\\stage5-admin-updates-price-a95fa-etain-historical-commission\\test-failed-2.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "C:\\Users\\zil\\Documents\\Triple_S_OS\\test-results\\stage5-admin-updates-price-a95fa-etain-historical-commission\\error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "C:\\Users\\zil\\Documents\\Triple_S_OS\\test-results\\stage5-admin-updates-price-a95fa-etain-historical-commission\\trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "C:\\Users\\zil\\Documents\\Triple_S_OS\\tests\\stage5.spec.ts",
+                    "column": 602,
+                    "line": 11
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "e3b4797897cdae8f29a9-5e8e7a6fe5d404916059",
+          "file": "stage5.spec.ts",
+          "line": 5,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-09-13T09:18:21.884Z",
+    "duration": 81793.461,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 1,
+    "flaky": 0
+  }
+}

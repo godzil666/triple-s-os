@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1199" height="1312" viewBox="0 0 1199 1312">
+<defs>
+  <linearGradient id="blueGrad" gradientUnits="userSpaceOnUse" x1="730" y1="110" x2="390" y2="650">
+    <stop offset="0%" stop-color="#00FFD2"/>
+    <stop offset="28%" stop-color="#00D9EA"/>
+    <stop offset="55%" stop-color="#00A7FF"/>
+    <stop offset="100%" stop-color="#004AFF"/>
+  </linearGradient>
+  <linearGradient id="blueGradLeft" gradientUnits="userSpaceOnUse" x1="405" y1="395" x2="395" y2="882">
+    <stop offset="0%" stop-color="#00FFD2"/>
+    <stop offset="42%" stop-color="#00B8FF"/>
+    <stop offset="100%" stop-color="#004AFF"/>
+  </linearGradient>
+  <linearGradient id="pinkGradRight" gradientUnits="userSpaceOnUse" x1="775" y1="395" x2="750" y2="875">
+    <stop offset="0%" stop-color="#FF00B8"/>
+    <stop offset="48%" stop-color="#F900C0"/>
+    <stop offset="100%" stop-color="#8A00C5"/>
+  </linearGradient>
+  <linearGradient id="pinkGradBottom" gradientUnits="userSpaceOnUse" x1="455" y1="645" x2="575" y2="1160">
+    <stop offset="0%" stop-color="#FF00B8"/>
+    <stop offset="55%" stop-color="#F800BE"/>
+    <stop offset="100%" stop-color="#8700C0"/>
+  </linearGradient>
+</defs>
+<!-- top blue/cyan ribbon -->
+<path d="M591 112 L444 320 L590 561 L393 563 L438 634 L714 633 L525 322 L586 233 L683 387 L697 371 L726 326 L677 245 Z"
+      fill="url(#blueGrad)" stroke="none"/>
+<!-- left blue/cyan ribbon -->
+<path d="M403 396 L238 636 L394 881 L435 821 L321 636 L440 461 L435 448 Z"
+      fill="url(#blueGradLeft)" stroke="none"/>
+<!-- right pink/purple ribbon -->
+<path d="M772 395 L730 461 L839 641 L717 815 L752 874 L783 836 L919 641 L833 492 Z"
+      fill="url(#pinkGradRight)" stroke="none"/>
+<!-- bottom pink/purple ribbon -->
+<path d="M721 647 L448 650 L638 955 L578 1044 L486 895 L444 954 L574 1160 L702 979 L716 953 L567 711 L758 708 L756 700 Z"
+      fill="url(#pinkGradBottom)" stroke="none"/>
+</svg>
