@@ -1,6 +1,16 @@
 # Production Readiness — Setelah Demo
 
-Dokumen ini bukan klaim kesiapan produksi. Ini daftar gate yang masih diperlukan setelah demo tahap 6 (13 September 2026).
+Dokumen ini bukan klaim kesiapan produksi. Ini daftar gate yang masih diperlukan setelah demo tahap 6 (13 September 2026) dan setelah membaca `Validasi dan Ceklis Prototype PT SSS.docx`.
+
+## Perubahan build production
+
+`vite build` memakai mode production: banner, role switcher, kontrol skenario, dan kontrol transaksi demo tidak ditampilkan. Checkout, detail order, dan portal hotspot menampilkan status belum dikonfigurasi sampai backend/database, Mayar, WhatsApp, serta adaptor hotspot tersedia. Development tetap menyediakan fixture untuk QA melalui `npm run dev`; jangan memakai data fixture sebagai data operasional.
+
+## Delta dari checklist PT SSS
+
+- **Sudah tercatat:** pembayaran terpusat ke owner sebagai arah bisnis; 50 titik server; pilot awal Girijaya dengan SSID/server Sizinet dan paket uji Rp5.000; voucher customer tanpa akun; ekspor CSV disebut sebagai kebutuhan.
+- **Masih terbuka:** pemilik dan kebijakan akun produksi, provider/hotspot per mitra, apakah satu provider memiliki banyak lokasi, aturan voucher lintas hotspot, expiry setelah pembelian, refund dan webhook Mayar, jumlah voucher pilot, detail akses teknis, serta keputusan white-label.
+- **Belum diimplementasikan sebagai integrasi:** ekspor CSV operasional, provider Mayar, queue WhatsApp, captive portal/MikroTik, database bersama, backup/restore, dan observability. Poin ini membutuhkan keputusan/access client dan tidak boleh digantikan fixture lokal.
 
 ## Gate 1 — Bisnis
 

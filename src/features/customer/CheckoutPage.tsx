@@ -8,6 +8,7 @@ import { normalizeCustomer } from '../../domain/customer'
 import { customerService } from '../../services/customer-http'
 import type { Catalog, Offer } from '../../services/customer-contracts'
 import { Flow, LoadState, Summary, draftKey, errorMessage, useCatalog } from './purchase-shared'
+import { isProduction } from '../../config/runtime'
 interface Draft { version:1; partnerId:string; packageId:string; name:string; whatsapp:string; channel:'qris'|'ewallet'; requestKey:string; phase:'details'|'review'; locked:boolean; token?:string; reviewed?:{catalog:Pick<Catalog,'partner'|'site'>;offer:Offer} }
 function readDraft(partnerId:string,packageId:string):Draft {
   try{const d=JSON.parse(sessionStorage.getItem(draftKey)??'null');if(d?.version===1&&d.partnerId===partnerId&&d.packageId===packageId&&typeof d.requestKey==='string')return d}catch{/* Start an empty draft. */}
@@ -15,6 +16,7 @@ function readDraft(partnerId:string,packageId:string):Draft {
 }
 export function CheckoutPage() {
   const [params]=useSearchParams(),partnerId=params.get('mitra')??'',packageId=params.get('paket')??''
+  if (isProduction) return <Flow title="Pembelian online belum diaktifkan" step={2}><Card className="checkout-form"><h2>Layanan pembayaran sedang disiapkan</h2><p>Integrasi pembayaran terpusat PT. SSS dan penerbitan voucher belum dikonfigurasi pada lingkungan ini. Tidak ada transaksi yang dapat dibuat dari halaman ini.</p><a className="button button--primary" href={import.meta.env.VITE_ADMIN_WHATSAPP_URL || 'https://wa.me/?text=Halo%20Admin%20SSS%2C%20saya%20ingin%20menanyakan%20pembelian%20WiFi.'} target="_blank" rel="noreferrer">Hubungi admin SSS</a><Link className="flow-back" to={partnerId ? `/mitra/${encodeURIComponent(partnerId)}/paket` : '/'}>Kembali ke pilihan paket</Link></Card></Flow>
   return <CheckoutForm key={`${partnerId}:${packageId}`} partnerId={partnerId} packageId={packageId}/>
 }
 function CheckoutForm({partnerId,packageId}:{partnerId:string;packageId:string}) {

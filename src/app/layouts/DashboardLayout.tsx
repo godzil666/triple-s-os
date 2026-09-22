@@ -10,6 +10,7 @@ import { SiteFooter } from '../../components/SiteFooter'
 import { useDemoContext } from '../../demo/DemoContext'
 import { useAuth } from '../../auth/AuthContext'
 import { VideoBackdrop } from '../../components/VideoBackdrop'
+import { isDemoMode } from '../../config/runtime'
 
 const partnerItems = [
   { to: '/mitra-dashboard', label: 'Ringkasan', icon: LayoutDashboard },
@@ -41,7 +42,7 @@ export function DashboardLayout({ role }: { role: 'Mitra' | 'Admin' | 'Owner' })
       <div id="dashboard-navigation" className={`sidebar-content ${menuOpen ? 'is-open' : ''}`}>
         <p className="eyebrow sidebar-label">Ruang {role.toLowerCase()}</p>
         <nav aria-label={`Navigasi ${role.toLowerCase()}`}>{items.map(({ to, label, icon: Icon }) => <NavLink key={to} to={to} end={to === '/admin' || to === '/owner' || to === '/mitra-dashboard'} onClick={() => setMenuOpen(false)}><Icon size={19} aria-hidden="true" />{label}<ChevronRight size={15} className="nav-chevron" aria-hidden="true" /></NavLink>)}</nav>
-        <div className="sidebar-note"><div className="sidebar-note-icon"><CircleHelp size={21} aria-hidden="true" /></div><strong>Ruang kerja dalam demo</strong><p>{role === 'Mitra' ? 'Pantau transaksi, stok, dan sesi milik mitra. Semua data operasional masih simulasi.' : 'Kelola mitra, paket, stok dan transaksi sintetis. Perubahan tercatat di audit.'}</p><button className="text-button" onClick={() => setHelpOpen(true)}>Lihat batas demo <ArrowUpRight size={16} aria-hidden="true" /></button></div>
+        <div className="sidebar-note"><div className="sidebar-note-icon"><CircleHelp size={21} aria-hidden="true" /></div><strong>{isDemoMode ? 'Ruang kerja dalam demo' : 'Ruang kerja Triple S OS'}</strong><p>{isDemoMode ? (role === 'Mitra' ? 'Pantau transaksi, stok, dan sesi milik mitra. Semua data operasional masih simulasi.' : 'Kelola mitra, paket, stok dan transaksi sintetis. Perubahan tercatat di audit.') : 'Kelola data sesuai peran Anda. Integrasi provider, hotspot, dan pembayaran mengikuti konfigurasi operasional.'}</p><button className="text-button" onClick={() => setHelpOpen(true)}>{isDemoMode ? 'Lihat batas demo' : 'Lihat panduan akses'} <ArrowUpRight size={16} aria-hidden="true" /></button></div>
         <p className="sidebar-footer">Triple S OS <span>{role === 'Mitra' ? 'Dashboard · Tahap 4' : 'Pengelolaan · Tahap 5'}</span></p>
       </div>
     </aside>
@@ -53,7 +54,7 @@ export function DashboardLayout({ role }: { role: 'Mitra' | 'Admin' | 'Owner' })
       </main>
       <SiteFooter compact onHelp={() => setHelpOpen(true)} />
     </div>
-    <Dialog open={helpOpen} onClose={() => setHelpOpen(false)} title="Tentang ruang kerja demo"><p>Akses staf diperiksa oleh backend lokal. Data operasional dan koneksi WiFi masih sintetis; pengelolaan tidak mengubah router atau memproses pembayaran nyata.</p><p>Mitra hanya menerima data miliknya. Pengelolaan akun dan kontrol skenario khusus owner. Login staf tidak memberikan akses internet melalui router.</p><Button onClick={() => setHelpOpen(false)}>Tutup panduan</Button></Dialog>
+    <Dialog open={helpOpen} onClose={() => setHelpOpen(false)} title={isDemoMode ? 'Tentang ruang kerja demo' : 'Panduan akses ruang kerja'}><p>{isDemoMode ? 'Akses staf diperiksa oleh backend lokal. Data operasional dan koneksi WiFi masih sintetis; pengelolaan tidak mengubah router atau memproses pembayaran nyata.' : 'Akses staf mengikuti akun dan peran yang diberikan owner. Pastikan integrasi provider, hotspot, dan pembayaran sudah dikonfigurasi sebelum mengaktifkan operasi nyata.'}</p><p>Mitra hanya menerima data miliknya. Pengelolaan akun khusus owner. Login staf tidak memberikan akses internet melalui router.</p><Button onClick={() => setHelpOpen(false)}>Tutup panduan</Button></Dialog>
   </div>
 }
 

@@ -1,6 +1,6 @@
 # Triple S OS
 
-Demo lokal untuk monitoring dan pengelolaan voucher WiFi PT. Sahabat Sinyal Sejahtera dengan sudut pandang customer, mitra, dan owner/admin.
+Aplikasi customer, mitra, dan owner/admin untuk pengelolaan layanan WiFi PT. Sahabat Sinyal Sejahtera. Build production menyembunyikan kontrol demo dan menahan transaksi, portal hotspot, serta notifikasi sampai provider dan infrastruktur produksi dikonfigurasi.
 
 ## Menjalankan
 
@@ -18,6 +18,8 @@ npm run build
 npm run preview
 ```
 
+`npm run dev` memakai fixture lokal untuk QA dan presentasi internal. Build/deploy production menggunakan `VITE_APP_MODE=production` (mode ini otomatis aktif saat `vite build`) dan tidak menampilkan banner, role switcher, kontrol skenario, atau aksi pembayaran simulasi.
+
 Akun demo dan cara login ada di `docs/AUTH_LOCAL.md`.
 
 ## Verifikasi
@@ -32,10 +34,10 @@ npx playwright test tests/stage3.spec.ts tests/stage4.spec.ts tests/stage5.spec.
 
 Bukti screenshot/JSON ada di `docs/verification/`. Hasil browser yang terhenti atau timeout harus dicatat sebagai inconclusive, bukan lulus.
 
-## Reset, fixture aman, dan batas demo
+## Reset, fixture aman, dan batas lingkungan
 
-Gunakan kontrol reset demo setelah konfirmasi. Data yang dipakai sintetis. Pembayaran, WhatsApp, monitoring, identitas perangkat, SSID, koneksi WiFi, dan MikroTik masih disimulasikan. JSON lokal bukan database produksi, autentikasi lokal belum di-hardening, dan demo tidak menjamin akses internet/captive portal nyata.
+Gunakan kontrol reset demo setelah konfirmasi hanya pada development. Data yang dipakai sintetis. Pembayaran, WhatsApp, monitoring, identitas perangkat, SSID, koneksi WiFi, dan MikroTik belum terintegrasi. JSON lokal bukan database produksi, autentikasi lokal belum di-hardening, dan portal tidak menjamin akses internet/captive portal nyata.
 
 Reset: login sebagai owner, buka **Kontrol demo**, pilih reset, lalu konfirmasi. Reset hanya state sintetis; akun staf tidak dihapus. Fixture berisi 50 mitra fiktif, paket contoh, batch kode sintetis, order dan monitoring mock. Password awal ada di `.local/server/INITIAL_ACCOUNTS.md` dan tidak dimasukkan ke bundle atau dokumentasi presentasi.
 
-Urutan menuju pilot ada di `docs/PRODUCTION_READINESS.md`. Demo tidak siap produksi dan tidak mengirim pesan, memproses pembayaran, memilih WiFi, membaca MAC/SSID, atau mengubah router.
+Checklist menuju pilot ada di `docs/PRODUCTION_READINESS.md`. Build production tetap memerlukan backend/database bersama, payment provider, WhatsApp queue, dan adaptor hotspot sebelum operasi nyata. Tidak ada secret provider di bundle.

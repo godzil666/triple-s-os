@@ -137,7 +137,7 @@ Rujukan teknis yang diperiksa untuk fondasi: [Vite Getting Started](https://vite
 
 ## Refinement UI — 10 September 2026
 
-**Selesai sesuai pilihan user:** hero gelap + konten/dashboard terang; hero lebar penuh sekitar 78svh; glassmorphism lebih kuat pada header/hero dan lebih halus pada area kerja; SVG bersama teks Triple S OS; footer lengkap dengan placeholder; teks hero dipertahankan. Persetujuan ini menggantikan wordmark sementara dan arah permukaan awal, bukan aturan bisnis.
+**Selesai sesuai pilihan user:** hero gelap + konten/dashboard terang; hero lebar penuh sekitar 78svh; glassmorphism lebih kuat pada header/hero dan lebih halus pada area kerja; SVG bersama teks SSS OS; footer lengkap dengan placeholder; teks hero dipertahankan. Persetujuan ini menggantikan wordmark sementara dan arah permukaan awal, bukan aturan bisnis.
 
 ### Perubahan dan aset
 
@@ -418,3 +418,17 @@ Batas demo tetap berlaku: video hanya asset lokal, portal WiFi dan jaringan/pera
 ## Penyelarasan tipografi Creativeans — 15 September 2026
 
 Deklarasi font aplikasi sekarang memakai **Roboto Variable** lokal melalui `@fontsource-variable/roboto`, mengikuti karakter sans yang dipakai halaman referensi. Font diterapkan sebagai default body, kontrol form, navigasi, dashboard, dan judul; bobot judul dibuat lebih ringan agar tetap terasa editorial tanpa mengambil font proprietary dari pihak lain. Manrope tidak lagi dimuat oleh entrypoint.
+
+## Wordmark SSS dan CTA WhatsApp — 22 September 2026
+
+Wordmark di samping logo kini menampilkan **S.S.S** dengan `Bodoni Moda Variable`, dipakai sebagai display serif high-contrast yang mendekati referensi gambar user. Logo SVG tidak diubah. Hero customer mendapat CTA kedua **Hubungi admin** di samping **Temukan mitra Anda**; link membawa pesan pembuka tentang kemitraan atau pemasangan WiFi. Karena nomor admin belum diberikan, fallback demo memakai halaman WhatsApp dengan pesan yang sudah diisi. Untuk tautan langsung ke admin, set `VITE_ADMIN_WHATSAPP_URL` ke URL `https://wa.me/<nomor>` milik SSS sebelum presentasi.
+
+Link voucher dipindahkan ke baris terpisah dan layout CTA menjadi flex-wrap/stacked pada layar sempit, sehingga tidak lagi bertabrakan seperti pada gambar 4.
+
+Favicon sekarang memakai salinan apa adanya dari `logo_SSS.svg` pada `public/favicon.svg`, lalu direferensikan dari `index.html` sebagai favicon SVG. Tidak ada perubahan pada path atau warna logo.
+
+## Persiapan build production dan pembacaan checklist PT SSS — 23 September 2026
+
+Runtime sekarang membedakan build production dari development. Pada production, banner/role switcher/kontrol skenario tidak dirender; checkout, detail order, dan portal hotspot menahan aksi yang masih memerlukan Mayar, WhatsApp, database bersama, atau adaptor MikroTik. Development tetap dapat memakai fixture untuk QA melalui `npm run dev`.
+
+Checklist `Validasi dan Ceklis Prototype PT SSS.docx` dibaca seluruhnya. Poin yang perlu dibawa ke backlog client: pilot Girijaya/Sizinet, ekspor CSV, paket mingguan/OLT-rumahan, aturan binding provider/hotspot, ownership akun produksi, dan akses integrasi Mayar/MikroTik/WhatsApp. Tidak ada keputusan kosong yang diubah menjadi asumsi aplikasi.

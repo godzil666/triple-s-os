@@ -17,6 +17,7 @@
   --glass-surface: #ffffffd9;
   --glass-border: #d4dfdf;
   --glass-shadow: 0 6px 24px #193d4505;
+  --font-display: 'Bodoni Moda Variable', Georgia, serif;
 }
 body { background: var(--color-bg); color: var(--color-text); }
 h1, h2, h3 { text-wrap: balance; font-family: 'Roboto Variable', 'Segoe UI', sans-serif; font-weight: 450; }
@@ -69,7 +70,8 @@ h1, h2, h3 { text-wrap: balance; font-family: 'Roboto Variable', 'Segoe UI', san
 .customer-shell--home .customer-header nav > a.active { background: #b5f4e8; color: #153a40; }
 .customer-shell--home .customer-header nav > a:hover, .customer-shell--home .customer-header .button:hover { background: #30505c; color: white; }
 .customer-header .brand img { width: 43px; height: 48px; }
-.customer-header .brand-wordmark { font-size: 26px; }
+.brand-wordmark { font-family: var(--font-display); font-weight: 800; letter-spacing: -.1em; }
+.customer-header .brand-wordmark { font-size: 27px; }
 .customer-hero { height: auto; min-height: min(790px, 88svh); max-height: none; background: var(--editorial-ink); }
 .customer-hero .hero-inner { min-height: inherit; padding-block: 175px 170px; justify-content: center; }
 .customer-hero .hero-shade { background: linear-gradient(90deg, #09171de8 0%, #0a1a23a6 48%, #08161e8c 100%), linear-gradient(0deg, #09171d, transparent 65%); }
@@ -82,9 +84,14 @@ h1, h2, h3 { text-wrap: balance; font-family: 'Roboto Variable', 'Segoe UI', san
 .customer-hero .hero-copy h1 > span { display: inline-block; color: #b5f4e8; font-weight: 450; font-style: italic; }
 .hero-intro { padding-bottom: 3px; }
 .customer-hero .hero-description { margin: 0; max-width: 350px; color: #e1edf0; font-size: 15px; line-height: 1.85; }
-.customer-hero .hero-cta { background: var(--editorial-mint); border: 1px solid var(--editorial-mint); color: #14393f; border-radius: 999px; min-height: 56px; box-shadow: none; margin-top: 28px; padding: 10px 13px 10px 23px; gap: 22px; font-size: 13px; }
+.hero-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-top: 28px; }
+.customer-hero .hero-cta { background: var(--editorial-mint); border: 1px solid var(--editorial-mint); color: #14393f; border-radius: 999px; min-height: 56px; box-shadow: none; margin-top: 0; padding: 10px 13px 10px 23px; gap: 22px; font-size: 13px; }
 .hero-cta > svg { box-sizing: content-box; padding: 9px; background: #153a40; color: #fff; border-radius: 50%; }
 .customer-hero .hero-cta:hover { background: #e4fff9; }
+.customer-hero .hero-cta--whatsapp { background: #ffffffdb; border-color: #ffffffa6; color: #14393f; }
+.customer-hero .hero-cta--whatsapp > svg:first-child { padding: 0; background: none; color: #087a87; }
+.customer-hero .hero-cta--whatsapp > svg:last-child { padding: 8px; }
+.customer-hero .hero-cta--whatsapp:hover { background: #fff; color: #14393f; }
 .hero-voucher-link { display: inline-flex; align-items: center; gap: 9px; min-height: 44px; color: #deeeed; font-size: 12px; margin-top: 14px; }
 .hero-voucher-link:hover { text-decoration: underline; text-underline-offset: 5px; }
 .customer-hero .hero-bottom { width: min(var(--content-width), calc(100% - 96px)); bottom: 30px; padding-top: 23px; border-top: 1px solid #ffffff38; }
@@ -192,6 +199,7 @@ h1, h2, h3 { text-wrap: balance; font-family: 'Roboto Variable', 'Segoe UI', san
   .customer-hero .hero-copy h1 { font-size: clamp(53px, 8.7vw, 76px); }
   .customer-hero .hero-eyebrow { margin-bottom: 24px; }
   .hero-intro { max-width: none; }
+  .hero-actions { margin-top: 25px; }
   .customer-hero .hero-description { max-width: 520px; }
   .hero-voucher-link { margin-left: 22px; }
   .purchase-steps { gap: 20px; padding-block: 30px; margin-bottom: 55px; }
@@ -224,6 +232,8 @@ h1, h2, h3 { text-wrap: balance; font-family: 'Roboto Variable', 'Segoe UI', san
   .customer-hero .hero-eyebrow { font-size: 10px; margin-bottom: 25px; }
   .customer-hero .hero-description { font-size: 14px; }
   .customer-hero .hero-cta { margin-top: 22px; font-size: 13px; }
+  .hero-actions { align-items: flex-start; flex-direction: column; gap: 10px; margin-top: 18px; }
+  .customer-hero .hero-cta { margin-top: 0; }
   .hero-voucher-link { margin: 10px 0 0; font-size: 12px; }
   .customer-hero .hero-bottom { width: calc(100% - 36px); bottom: 24px; gap: 18px; }
   .hero-context span { font-size: 11px; }

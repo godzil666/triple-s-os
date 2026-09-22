@@ -9,6 +9,7 @@ import { EmptyState } from '../../components/EmptyState'
 import { Input } from '../../components/Input'
 import { Select } from '../../components/Select'
 import { usePresentationPartners } from '../../demo/presentationPartners'
+import { isDemoMode } from '../../config/runtime'
 
 export function PartnerPickerPage() {
   const presentationPartners = usePresentationPartners()
@@ -18,7 +19,7 @@ export function PartnerPickerPage() {
   const query = search.trim().toLocaleLowerCase('id-ID')
   const partners = presentationPartners.filter(partner => (area === 'all' || partner.area === area) && `${partner.name} ${partner.area} ${partner.ssid}`.toLocaleLowerCase('id-ID').includes(query))
   return <><CustomerHero /><div className="page-container customer-page">
-    <ol className="purchase-steps" aria-label="Tahapan pembelian"><li aria-current="step"><span className="step-number">01</span><div><strong>Pilih mitra</strong><span>Tentukan lokasi WiFi</span></div><ChevronRight size={18} aria-hidden="true" /></li><li><span className="step-number">02</span><div><strong>Pilih paket</strong><span>Sesuaikan kebutuhan</span></div><ChevronRight size={18} aria-hidden="true" /></li><li><span className="step-number">03</span><div><strong>Bayar & gunakan</strong><span>Pembayaran & aktivasi simulasi</span></div></li></ol>
+    <ol className="purchase-steps" aria-label="Tahapan pembelian"><li aria-current="step"><span className="step-number">01</span><div><strong>Pilih mitra</strong><span>Tentukan lokasi WiFi</span></div><ChevronRight size={18} aria-hidden="true" /></li><li><span className="step-number">02</span><div><strong>Pilih paket</strong><span>Sesuaikan kebutuhan</span></div><ChevronRight size={18} aria-hidden="true" /></li><li><span className="step-number">03</span><div><strong>{isDemoMode ? 'Bayar & gunakan' : 'Lanjutkan layanan'}</strong><span>{isDemoMode ? 'Pembayaran & aktivasi simulasi' : 'Aktivasi setelah integrasi'}</span></div></li></ol>
     <section className="partner-directory" id="pilih-mitra" aria-labelledby="directory-title">
       <div className="directory-heading"><div><p className="eyebrow">JARINGAN MITRA</p><h2 id="directory-title">Mau terhubung di mana?</h2><p>Pilih nama mitra secara manual, sesuai lokasi WiFi yang akan digunakan.</p></div><Badge tone="info">{presentationPartners.length} lokasi contoh</Badge></div>
       <div className="directory-layout"><div className="directory-main">
@@ -30,7 +31,7 @@ export function PartnerPickerPage() {
           <div className="partner-card-bottom"><span>Lokasi contoh</span><Link to={`/mitra/${partner.id}/paket`} aria-label={`Pilih ${partner.name}`}>Pilih mitra <ArrowRight size={17} aria-hidden="true" /></Link></div>
         </Card>)}</div> : <EmptyState title="Mitra belum ditemukan" description="Coba nama mitra, area, atau SSID lain. Anda juga bisa menghapus filter untuk melihat semua lokasi contoh." action={<Button variant="secondary" onClick={() => { setSearch(''); setArea('all') }}>Hapus pencarian & filter</Button>} />}
       {partners.length>limit&&<Button variant="secondary" onClick={()=>setLimit(limit+6)}>Tampilkan mitra lainnya</Button>}</div><aside className="directory-aside" aria-label="Panduan pemilihan mitra"><div className="location-guide"><div className="guide-icon"><MapPin size={23} aria-hidden="true" /></div><h3>Pastikan mitranya <br />sudah sesuai.</h3><p>Voucher hanya berlaku pada satu mitra yang Anda pilih.</p><div className="guide-rule" /><div className="guide-point"><Check size={17} aria-hidden="true" /><p>Boleh beli sebelum tiba di lokasi.</p></div><div className="guide-point"><Check size={17} aria-hidden="true" /><p>Cocokkan nama SSID dengan WiFi mitra.</p></div><div className="guide-point"><Check size={17} aria-hidden="true" /><p>Durasi dimulai saat login pertama berhasil.</p></div></div><div className="manual-note"><ShieldCheck size={20} aria-hidden="true" /><p>Lokasi dipilih oleh Anda. Tidak ada deteksi lokasi atau jaringan otomatis.</p></div></aside></div>
-      <div className="phase-note"><Info size={18} aria-hidden="true" /><p><strong>Pembelian simulasi.</strong> Pilih paket, review data, lalu coba pembayaran dan aktivasi. Nama mitra, SSID, transaksi, dan koneksi adalah contoh demo.</p></div>
+      <div className="phase-note"><Info size={18} aria-hidden="true" /><p>{isDemoMode ? <><strong>Pembelian simulasi.</strong> Pilih paket, review data, lalu coba pembayaran dan aktivasi. Nama mitra, SSID, transaksi, dan koneksi adalah contoh demo.</> : <><strong>Layanan sedang disiapkan.</strong> Pilih mitra dan paket untuk melihat katalog. Pembayaran, penerbitan voucher, dan koneksi hotspot diaktifkan setelah integrasi produksi selesai.</>}</p></div>
     </section>
   </div></>
 }

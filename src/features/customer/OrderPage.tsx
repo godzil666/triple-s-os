@@ -10,11 +10,13 @@ import { customerService } from '../../services/customer-http'
 import type { CustomerDetail } from '../../services/customer-contracts'
 import type { PaymentStatus, ProvisioningStatus } from '../../domain/models'
 import { Flow, Summary, errorMessage, jakarta, rupiah } from './purchase-shared'
+import { isProduction } from '../../config/runtime'
 
 const paymentLabels:Record<PaymentStatus,string>={pending:'Menunggu pembayaran',paid:'Pembayaran berhasil',failed:'Pembayaran gagal',expired:'Pembayaran timeout'}
 function readNetwork(){try{return sessionStorage.getItem('triple-s:mock-network')??''}catch{return ''}}
 export function OrderPage({voucherOnly=false}:{voucherOnly?:boolean}) {
   const {token=''}=useParams()
+  if (isProduction) return <Flow title="Pesanan belum tersedia" step={3}><Card className="provision-card"><h2>Integrasi transaksi belum aktif</h2><p>Detail order, pembayaran, penerbitan voucher, dan notifikasi WhatsApp akan tersedia setelah backend produksi PT. SSS dikonfigurasi.</p><a className="button button--primary" href={import.meta.env.VITE_ADMIN_WHATSAPP_URL || 'https://wa.me/?text=Halo%20Admin%20SSS%2C%20saya%20ingin%20menanyakan%20status%20voucher.'} target="_blank" rel="noreferrer">Hubungi admin SSS</a><Link className="flow-back" to="/">Kembali ke pilihan mitra</Link></Card></Flow>
   return <OrderDetail key={token} token={token} voucherOnly={voucherOnly}/>
 }
 function OrderDetail({token,voucherOnly}:{token:string;voucherOnly:boolean}) {

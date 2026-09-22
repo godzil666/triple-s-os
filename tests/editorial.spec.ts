@@ -15,6 +15,7 @@ for (const width of [360, 390, 768, 1024, 1440]) {
     page.on('pageerror', error => errors.push(error.message))
     await page.goto('/')
     await expect(page.getByRole('heading', { name: 'Koneksi baik, mulai dari sini.' })).toBeVisible()
+    await expect(page.getByRole('link', { name: 'Hubungi admin SSS melalui WhatsApp' })).toHaveAttribute('href', /wa\.me/)
     await fits(page)
     await page.screenshot({ path: `${evidence}/home-${width}.png`, fullPage: true })
     await page.getByRole('button', { name: 'Panduan', exact: true }).click()

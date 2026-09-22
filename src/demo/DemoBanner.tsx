@@ -4,8 +4,10 @@ import { useState } from 'react'
 import { ScenarioPanel } from './ScenarioPanel'
 import './ScenarioPanel.css'
 import { useAuth } from '../auth/AuthContext'
+import { isDemoMode } from '../config/runtime'
 
 export function DemoBanner() {
+  if (!isDemoMode) return null
   const [open, setOpen] = useState(false)
   const {user} = useAuth()
   return <><div className="demo-banner"><div className="demo-banner-inner">

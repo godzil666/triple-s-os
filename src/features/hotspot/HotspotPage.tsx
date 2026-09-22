@@ -10,6 +10,7 @@ import { Button } from '../../components/Button'
 import { VideoBackdrop } from '../../components/VideoBackdrop'
 import type { Voucher } from '../../domain/models'
 import './hotspot.css'
+import { isProduction } from '../../config/runtime'
 type VoucherView = Pick<Voucher,'id'|'siteId'|'status'|'kind'|'durationSeconds'|'maxConcurrentDevices'|'firstActivatedAt'|'expiresAt'>
 interface HotspotSession { voucher: VoucherView | null; clockNow: string; connected: boolean }
 const date = (value: string) => new Intl.DateTimeFormat('id-ID',{dateStyle:'medium',timeStyle:'short',timeZone:'Asia/Jakarta'}).format(new Date(value))
@@ -23,6 +24,13 @@ const errors: Record<string,string> = {
   RATE_LIMITED:'Terlalu banyak percobaan. Tunggu 15 menit sebelum mencoba kembali.',
 }
 export function HotspotPage() {
+  if (isProduction) return <ProductionHotspotPage />
+  return <DemoHotspotPage />
+}
+function ProductionHotspotPage() {
+  return <div className="login-surface"><VideoBackdrop /><div className="hotspot-page page-container"><div className="hotspot-heading"><p className="eyebrow">PORTAL WIFI</p><h1>Login WiFi<br />belum tersedia.</h1><p>Portal ini akan aktif setelah hotspot pilot dan adaptor login PT. SSS dikonfigurasi.</p></div><Card className="hotspot-card"><div className="hotspot-symbol"><Wifi size={28} aria-hidden="true" /></div><h2>Integrasi hotspot diperlukan</h2><p>Browser tidak dapat memilih WiFi, membaca SSID/MAC, atau mengubah router. Hubungi admin untuk aktivasi titik pilot.</p><a className="button button--primary" href={import.meta.env.VITE_ADMIN_WHATSAPP_URL || 'https://wa.me/?text=Halo%20Admin%20SSS%2C%20saya%20ingin%20menanyakan%20pemasangan%20WiFi.'} target="_blank" rel="noreferrer">Hubungi admin SSS</a><Link className="hotspot-back" to="/">Kembali ke halaman utama</Link></Card></div></div>
+}
+function DemoHotspotPage() {
   const {state}=useDemoContext(); const {siteId}=useParams(); const navigate=useNavigate()
   const [chosen,setChosen]=useState(''); const [code,setCode]=useState(''); const [busy,setBusy]=useState(false); const [message,setMessage]=useState('')
   const [session,setSession]=useState<HotspotSession | null>(null)

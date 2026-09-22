@@ -7,6 +7,7 @@ import { customerService } from '../../services/customer-http'
 import type { Catalog } from '../../services/customer-contracts'
 import type { Package } from '../../domain/models'
 import './purchase.css'
+import { isDemoMode } from '../../config/runtime'
 
 export const rupiah=(value:number)=>new Intl.NumberFormat('id-ID',{style:'currency',currency:'IDR',maximumFractionDigits:0}).format(value)
 export const duration=(seconds:number)=>seconds>=86400?`${seconds/86400} hari`:`${seconds/3600} jam`
@@ -33,7 +34,7 @@ export const errorMessage=(error:unknown)=>({
 }[error instanceof Error?error.message:'']??'Layanan lokal belum merespons. Coba lagi; gunakan pesanan yang sama agar tidak membeli dua kali.')
 
 export function Flow({title,step,children}:{title:string;step:number;children:ReactNode}) {
-  return <div className="page-container purchase-flow"><nav className="flow-steps" aria-label="Tahapan pembelian">{['Mitra','Paket','Data & review','Bayar & voucher'].map((s,i)=><span key={s} aria-current={i===step?'step':undefined}><b>{i+1}</b>{s}</span>)}</nav><p className="eyebrow">VOUCHER WIFI · DEMO LOKAL</p><h1>{title}</h1>{children}</div>
+  return <div className="page-container purchase-flow"><nav className="flow-steps" aria-label="Tahapan pembelian">{['Mitra','Paket','Data & review','Bayar & voucher'].map((s,i)=><span key={s} aria-current={i===step?'step':undefined}><b>{i+1}</b>{s}</span>)}</nav><p className="eyebrow">{isDemoMode ? 'VOUCHER WIFI · DEMO LOKAL' : 'VOUCHER WIFI'}</p><h1>{title}</h1>{children}</div>
 }
 export function Terms({pkg,partnerName}:{pkg:Package;partnerName:string}) {
   return <ul className="purchase-terms"><li>Hanya berlaku di satu lokasi: <strong>{partnerName}</strong>.</li><li>Durasi {duration(pkg.durationSeconds)} sejak login pertama berhasil; tetap berjalan saat logout.</li><li>{pkg.kind==='regular'?'Terkunci pada 1 perangkat pertama.':`Maksimal ${pkg.maxConcurrentDevices} perangkat online bersamaan, dengan waktu berakhir bersama.`}</li><li>Boleh dibeli sebelum tiba di lokasi.</li></ul>
