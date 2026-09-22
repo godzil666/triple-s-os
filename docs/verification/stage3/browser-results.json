@@ -1,0 +1,1377 @@
+{
+  "config": {
+    "argv": [
+      "C:\\Program Files\\nodejs\\node.exe",
+      "C:\\Users\\zil\\Documents\\Triple_S_OS\\node_modules\\@playwright\\test\\cli.js",
+      "test"
+    ],
+    "configFile": "C:\\Users\\zil\\Documents\\Triple_S_OS\\playwright.config.ts",
+    "rootDir": "C:/Users/zil/Documents/Triple_S_OS/tests",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "C:/Users/zil/Documents/Triple_S_OS/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "",
+        "name": "",
+        "testDir": "C:/Users/zil/Documents/Triple_S_OS/tests",
+        "testIgnore": [
+          "**/domain/**",
+          "**/server/**"
+        ],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "docs/verification/stage3/browser-results.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.63.0",
+    "workers": 1,
+    "webServer": {
+      "command": "npm run dev",
+      "url": "http://127.0.0.1:5174/api/health",
+      "reuseExistingServer": true,
+      "env": {
+        "SSS_WEB_PORT": "5174",
+        "SSS_API_PORT": "8788",
+        "SSS_DATA_DIR": ".local/auth-browser-tests"
+      }
+    }
+  },
+  "suites": [
+    {
+      "title": "auth-hotspot.spec.ts",
+      "file": "auth-hotspot.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "customer direct dashboard URLs require login; dev files and private API are not public",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 6512,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-10T16:32:21.621Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "3d7847906f84777f0cee-5cd280662753f6a69404",
+          "file": "auth-hotspot.spec.ts",
+          "line": 5,
+          "column": 1
+        },
+        {
+          "title": "staff login form, protected owner view and logout work by keyboard",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 4811,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-10T16:32:28.759Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "3d7847906f84777f0cee-3ceaa7d8eb9c7cfe50f8",
+          "file": "auth-hotspot.spec.ts",
+          "line": 16,
+          "column": 1
+        },
+        {
+          "title": "failed logout keeps the staff session visible until the server confirms revocation",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 3826,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-10T16:32:33.608Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "3d7847906f84777f0cee-2ad98fec05a7c7e41ea4",
+          "file": "auth-hotspot.spec.ts",
+          "line": 25,
+          "column": 1
+        },
+        {
+          "title": "partner cannot switch site or open owner; admin cannot manage owner accounts",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 5403,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-10T16:32:37.465Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "3d7847906f84777f0cee-6993bd077c381a9cf0ae",
+          "file": "auth-hotspot.spec.ts",
+          "line": 35,
+          "column": 1
+        },
+        {
+          "title": "customer offline voucher flow survives refresh and wrong-site failure without exposing staff controls",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 7426,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-10T16:32:42.901Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "3d7847906f84777f0cee-b7cbea25d5642bde33a2",
+          "file": "auth-hotspot.spec.ts",
+          "line": 47,
+          "column": 1
+        },
+        {
+          "title": "owner creates a scoped partner account and disabling it revokes the active browser session",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 10258,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-10T16:32:50.361Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "3d7847906f84777f0cee-b403b6a99974e4d03da2",
+          "file": "auth-hotspot.spec.ts",
+          "line": 67,
+          "column": 1
+        },
+        {
+          "title": "login and voucher portal fit 360px with keyboard and readable error",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 11228,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeFocused\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator:  getByRole('link', { name: 'Lewati ke konten utama' })\nExpected: focused\nReceived: inactive\nTimeout:  5000ms\n\nCall log:\n\u001b[2m  - Expect \"toBeFocused\" getByRole('link', { name: 'Lewati ke konten utama' }) with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('link', { name: 'Lewati ke konten utama' })\u001b[22m\n\u001b[2m    13 × locator resolved to <a class=\"skip-link\" href=\"#main-content\">Lewati ke konten utama</a>\u001b[22m\n\u001b[2m       - unexpected value \"inactive\"\u001b[22m\n",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeFocused\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator:  getByRole('link', { name: 'Lewati ke konten utama' })\nExpected: focused\nReceived: inactive\nTimeout:  5000ms\n\nCall log:\n\u001b[2m  - Expect \"toBeFocused\" getByRole('link', { name: 'Lewati ke konten utama' }) with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('link', { name: 'Lewati ke konten utama' })\u001b[22m\n\u001b[2m    13 × locator resolved to <a class=\"skip-link\" href=\"#main-content\">Lewati ke konten utama</a>\u001b[22m\n\u001b[2m       - unexpected value \"inactive\"\u001b[22m\n\n    at C:\\Users\\zil\\Documents\\Triple_S_OS\\tests\\auth-hotspot.spec.ts:91:131",
+                    "location": {
+                      "file": "C:\\Users\\zil\\Documents\\Triple_S_OS\\tests\\auth-hotspot.spec.ts",
+                      "column": 131,
+                      "line": 91
+                    },
+                    "snippet": "  89 |   }\n  90 |   await page.getByLabel('Kode voucher').fill('SALAH-KODE');await page.getByRole('button',{name:'Masuk dengan voucher'}).focus();await page.keyboard.press('Enter');await expect(page.getByRole('alert')).toContainText('tidak dikenali')\n> 91 |   await page.goto('/login');await page.keyboard.press('Tab');await expect(page.getByRole('link',{name:'Lewati ke konten utama'})).toBeFocused()\n     |                                                                                                                                   ^\n  92 | })\n  93 |"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "C:\\Users\\zil\\Documents\\Triple_S_OS\\tests\\auth-hotspot.spec.ts",
+                        "column": 131,
+                        "line": 91
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeFocused\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator:  getByRole('link', { name: 'Lewati ke konten utama' })\nExpected: focused\nReceived: inactive\nTimeout:  5000ms\n\nCall log:\n\u001b[2m  - Expect \"toBeFocused\" getByRole('link', { name: 'Lewati ke konten utama' }) with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('link', { name: 'Lewati ke konten utama' })\u001b[22m\n\u001b[2m    13 × locator resolved to <a class=\"skip-link\" href=\"#main-content\">Lewati ke konten utama</a>\u001b[22m\n\u001b[2m       - unexpected value \"inactive\"\u001b[22m\n\n\n  89 |   }\n  90 |   await page.getByLabel('Kode voucher').fill('SALAH-KODE');await page.getByRole('button',{name:'Masuk dengan voucher'}).focus();await page.keyboard.press('Enter');await expect(page.getByRole('alert')).toContainText('tidak dikenali')\n> 91 |   await page.goto('/login');await page.keyboard.press('Tab');await expect(page.getByRole('link',{name:'Lewati ke konten utama'})).toBeFocused()\n     |                                                                                                                                   ^\n  92 | })\n  93 |\n    at C:\\Users\\zil\\Documents\\Triple_S_OS\\tests\\auth-hotspot.spec.ts:91:131"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-10T16:33:00.652Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "C:\\Users\\zil\\Documents\\Triple_S_OS\\test-results\\auth-hotspot-login-and-vou-10914-keyboard-and-readable-error\\test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "C:\\Users\\zil\\Documents\\Triple_S_OS\\test-results\\auth-hotspot-login-and-vou-10914-keyboard-and-readable-error\\error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "C:\\Users\\zil\\Documents\\Triple_S_OS\\test-results\\auth-hotspot-login-and-vou-10914-keyboard-and-readable-error\\trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "C:\\Users\\zil\\Documents\\Triple_S_OS\\tests\\auth-hotspot.spec.ts",
+                    "column": 131,
+                    "line": 91
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "3d7847906f84777f0cee-5a1470064f8ca6195274",
+          "file": "auth-hotspot.spec.ts",
+          "line": 83,
+          "column": 36
+        },
+        {
+          "title": "login and voucher portal fit 768px with keyboard and readable error",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 6893,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-10T16:33:13.979Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "3d7847906f84777f0cee-51931f87eb96f5d428eb",
+          "file": "auth-hotspot.spec.ts",
+          "line": 83,
+          "column": 36
+        },
+        {
+          "title": "login and voucher portal fit 1440px with keyboard and readable error",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 11900,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeFocused\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator:  getByRole('link', { name: 'Lewati ke konten utama' })\nExpected: focused\nReceived: inactive\nTimeout:  5000ms\n\nCall log:\n\u001b[2m  - Expect \"toBeFocused\" getByRole('link', { name: 'Lewati ke konten utama' }) with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('link', { name: 'Lewati ke konten utama' })\u001b[22m\n\u001b[2m    13 × locator resolved to <a class=\"skip-link\" href=\"#main-content\">Lewati ke konten utama</a>\u001b[22m\n\u001b[2m       - unexpected value \"inactive\"\u001b[22m\n",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeFocused\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator:  getByRole('link', { name: 'Lewati ke konten utama' })\nExpected: focused\nReceived: inactive\nTimeout:  5000ms\n\nCall log:\n\u001b[2m  - Expect \"toBeFocused\" getByRole('link', { name: 'Lewati ke konten utama' }) with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('link', { name: 'Lewati ke konten utama' })\u001b[22m\n\u001b[2m    13 × locator resolved to <a class=\"skip-link\" href=\"#main-content\">Lewati ke konten utama</a>\u001b[22m\n\u001b[2m       - unexpected value \"inactive\"\u001b[22m\n\n    at C:\\Users\\zil\\Documents\\Triple_S_OS\\tests\\auth-hotspot.spec.ts:91:131",
+                    "location": {
+                      "file": "C:\\Users\\zil\\Documents\\Triple_S_OS\\tests\\auth-hotspot.spec.ts",
+                      "column": 131,
+                      "line": 91
+                    },
+                    "snippet": "  89 |   }\n  90 |   await page.getByLabel('Kode voucher').fill('SALAH-KODE');await page.getByRole('button',{name:'Masuk dengan voucher'}).focus();await page.keyboard.press('Enter');await expect(page.getByRole('alert')).toContainText('tidak dikenali')\n> 91 |   await page.goto('/login');await page.keyboard.press('Tab');await expect(page.getByRole('link',{name:'Lewati ke konten utama'})).toBeFocused()\n     |                                                                                                                                   ^\n  92 | })\n  93 |"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "C:\\Users\\zil\\Documents\\Triple_S_OS\\tests\\auth-hotspot.spec.ts",
+                        "column": 131,
+                        "line": 91
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeFocused\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator:  getByRole('link', { name: 'Lewati ke konten utama' })\nExpected: focused\nReceived: inactive\nTimeout:  5000ms\n\nCall log:\n\u001b[2m  - Expect \"toBeFocused\" getByRole('link', { name: 'Lewati ke konten utama' }) with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('link', { name: 'Lewati ke konten utama' })\u001b[22m\n\u001b[2m    13 × locator resolved to <a class=\"skip-link\" href=\"#main-content\">Lewati ke konten utama</a>\u001b[22m\n\u001b[2m       - unexpected value \"inactive\"\u001b[22m\n\n\n  89 |   }\n  90 |   await page.getByLabel('Kode voucher').fill('SALAH-KODE');await page.getByRole('button',{name:'Masuk dengan voucher'}).focus();await page.keyboard.press('Enter');await expect(page.getByRole('alert')).toContainText('tidak dikenali')\n> 91 |   await page.goto('/login');await page.keyboard.press('Tab');await expect(page.getByRole('link',{name:'Lewati ke konten utama'})).toBeFocused()\n     |                                                                                                                                   ^\n  92 | })\n  93 |\n    at C:\\Users\\zil\\Documents\\Triple_S_OS\\tests\\auth-hotspot.spec.ts:91:131"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-10T16:33:21.288Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "C:\\Users\\zil\\Documents\\Triple_S_OS\\test-results\\auth-hotspot-login-and-vou-c4165-keyboard-and-readable-error\\test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "C:\\Users\\zil\\Documents\\Triple_S_OS\\test-results\\auth-hotspot-login-and-vou-c4165-keyboard-and-readable-error\\error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "C:\\Users\\zil\\Documents\\Triple_S_OS\\test-results\\auth-hotspot-login-and-vou-c4165-keyboard-and-readable-error\\trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "C:\\Users\\zil\\Documents\\Triple_S_OS\\tests\\auth-hotspot.spec.ts",
+                    "column": 131,
+                    "line": 91
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "3d7847906f84777f0cee-c30f0c09ad718061b1e0",
+          "file": "auth-hotspot.spec.ts",
+          "line": 83,
+          "column": 36
+        }
+      ]
+    },
+    {
+      "title": "glass.spec.ts",
+      "file": "glass.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "hero uses local video, plays silently, pauses and resumes",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 4561,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-10T16:33:35.168Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0460b328bf7df719b073-4b7b19378c318aa22515",
+          "file": "glass.spec.ts",
+          "line": 4,
+          "column": 1
+        },
+        {
+          "title": "mobile uses lightweight source and SVG logo is present in header and footer",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2209,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-10T16:33:40.142Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0460b328bf7df719b073-b995876cda6b5e2f0431",
+          "file": "glass.spec.ts",
+          "line": 22,
+          "column": 1
+        },
+        {
+          "title": "reduced motion keeps the poster and does not request video",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 4347,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-10T16:33:42.386Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0460b328bf7df719b073-f38a6d323fbaddfc438f",
+          "file": "glass.spec.ts",
+          "line": 34,
+          "column": 1
+        },
+        {
+          "title": "failed media keeps readable hero and partner CTA",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 5078,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-10T16:33:46.773Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0460b328bf7df719b073-8b81dda070a00b573295",
+          "file": "glass.spec.ts",
+          "line": 46,
+          "column": 1
+        },
+        {
+          "title": "glass styles have an opaque reduced-transparency fallback",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 4287,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-10T16:33:51.891Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0460b328bf7df719b073-036d507d99e56c643bdf",
+          "file": "glass.spec.ts",
+          "line": 56,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "stage1.spec.ts",
+      "file": "stage1.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "all routes render without page overflow at 360px",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 36246,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-10T16:33:56.259Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "256aba07ec52fc01c968-810caa3b44a1e40d1234",
+          "file": "stage1.spec.ts",
+          "line": 14,
+          "column": 3
+        },
+        {
+          "title": "all routes render without page overflow at 768px",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 39392,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-10T16:34:32.542Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "256aba07ec52fc01c968-27ed11d2ec6e310f0863",
+          "file": "stage1.spec.ts",
+          "line": 14,
+          "column": 3
+        },
+        {
+          "title": "all routes render without page overflow at 1440px",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 42512,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-10T16:35:11.976Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "256aba07ec52fc01c968-edc8622b7bb5b7eab439",
+          "file": "stage1.spec.ts",
+          "line": 14,
+          "column": 3
+        },
+        {
+          "title": "manual partner search, area filter, empty recovery and selection",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 6634,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-10T16:35:54.527Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "256aba07ec52fc01c968-b2a57c7f954092d7355b",
+          "file": "stage1.spec.ts",
+          "line": 32,
+          "column": 1
+        },
+        {
+          "title": "keyboard skip link, visible focus, native dialog trap and Escape restoration",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 5493,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-10T16:36:01.203Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "256aba07ec52fc01c968-3a267c0382307e9a54f9",
+          "file": "stage1.spec.ts",
+          "line": 51,
+          "column": 1
+        },
+        {
+          "title": "mobile menu, role navigation and partner context",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 7434,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-10T16:36:06.732Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "256aba07ec52fc01c968-8db20d854bddc6c342f1",
+          "file": "stage1.spec.ts",
+          "line": 76,
+          "column": 1
+        },
+        {
+          "title": "customer and dashboard have no unlabeled fields or external requests",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 12820,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-10T16:36:14.199Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "256aba07ec52fc01c968-3fdd6a7d82a1ff095037",
+          "file": "stage1.spec.ts",
+          "line": 96,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "stage2.spec.ts",
+      "file": "stage2.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "scenario engine survives reload, keeps role context, and requires explicit reset confirmation",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 28969,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-10T16:36:27.085Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "62b586f9f775176e4782-d368df4cdac93b0cc3c8",
+          "file": "stage2.spec.ts",
+          "line": 5,
+          "column": 1
+        },
+        {
+          "title": "demo panel fits 360px and keeps keyboard focus inside the dialog",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 5415,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-10T16:36:56.092Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "62b586f9f775176e4782-14719b4b30f5a23526fd",
+          "file": "stage2.spec.ts",
+          "line": 41,
+          "column": 3
+        },
+        {
+          "title": "demo panel fits 768px and keeps keyboard focus inside the dialog",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 6290,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-10T16:37:01.550Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "62b586f9f775176e4782-ec23a08e5d4b9e86077c",
+          "file": "stage2.spec.ts",
+          "line": 41,
+          "column": 3
+        },
+        {
+          "title": "demo panel fits 1440px and keeps keyboard focus inside the dialog",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 16181,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-10T16:37:07.878Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "62b586f9f775176e4782-70c41de3ddadc358e136",
+          "file": "stage2.spec.ts",
+          "line": 41,
+          "column": 3
+        }
+      ]
+    },
+    {
+      "title": "stage3.spec.ts",
+      "file": "stage3.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "customer buys before arrival, survives refresh, activates later without entering a code, and keeps expiry",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 22712,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByText(/^Disalin\\./)\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByText(/^Disalin\\./) with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByText(/^Disalin\\./)\u001b[22m\n",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByText(/^Disalin\\./)\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByText(/^Disalin\\./) with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByText(/^Disalin\\./)\u001b[22m\n\n    at C:\\Users\\zil\\Documents\\Triple_S_OS\\tests\\stage3.spec.ts:21:124",
+                    "location": {
+                      "file": "C:\\Users\\zil\\Documents\\Triple_S_OS\\tests\\stage3.spec.ts",
+                      "column": 124,
+                      "line": 21
+                    },
+                    "snippet": "  19 |   await expect(page.getByText('Voucher siap digunakan',{exact:true})).toBeVisible()\n  20 |   await expect(page.getByText('Belum aktif — durasi belum dimulai',{exact:true})).toBeVisible()\n> 21 |   await page.getByRole('button',{name:'Salin kode voucher',exact:true}).click();await expect(page.getByText(/^Disalin\\./)).toBeVisible()\n     |                                                                                                                            ^\n  22 |   await page.reload();await expect(page).toHaveURL(url)\n  23 |   await page.getByRole('button',{name:'Sambungkan WiFi simulasi',exact:true}).click()\n  24 |   await expect(page.getByRole('alert')).toContainText('pengaturan WiFi')"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "C:\\Users\\zil\\Documents\\Triple_S_OS\\tests\\stage3.spec.ts",
+                        "column": 124,
+                        "line": 21
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByText(/^Disalin\\./)\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByText(/^Disalin\\./) with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByText(/^Disalin\\./)\u001b[22m\n\n\n  19 |   await expect(page.getByText('Voucher siap digunakan',{exact:true})).toBeVisible()\n  20 |   await expect(page.getByText('Belum aktif — durasi belum dimulai',{exact:true})).toBeVisible()\n> 21 |   await page.getByRole('button',{name:'Salin kode voucher',exact:true}).click();await expect(page.getByText(/^Disalin\\./)).toBeVisible()\n     |                                                                                                                            ^\n  22 |   await page.reload();await expect(page).toHaveURL(url)\n  23 |   await page.getByRole('button',{name:'Sambungkan WiFi simulasi',exact:true}).click()\n  24 |   await expect(page.getByRole('alert')).toContainText('pengaturan WiFi')\n    at C:\\Users\\zil\\Documents\\Triple_S_OS\\tests\\stage3.spec.ts:21:124"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-10T16:37:24.145Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "C:\\Users\\zil\\Documents\\Triple_S_OS\\test-results\\stage3-customer-buys-befor-db34c-ing-a-code-and-keeps-expiry\\test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "C:\\Users\\zil\\Documents\\Triple_S_OS\\test-results\\stage3-customer-buys-befor-db34c-ing-a-code-and-keeps-expiry\\error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "C:\\Users\\zil\\Documents\\Triple_S_OS\\test-results\\stage3-customer-buys-befor-db34c-ing-a-code-and-keeps-expiry\\trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "C:\\Users\\zil\\Documents\\Triple_S_OS\\tests\\stage3.spec.ts",
+                    "column": 124,
+                    "line": 21
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "109864117818eee9cf27-d3675925fec8c3f392f5",
+          "file": "stage3.spec.ts",
+          "line": 15,
+          "column": 1
+        },
+        {
+          "title": "payment failed and timeout recover on same order; paid provisioning/WhatsApp failures never require repayment",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 3,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 8873,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-10T16:37:50.511Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "109864117818eee9cf27-d31a3f236722bb207d39",
+          "file": "stage3.spec.ts",
+          "line": 34,
+          "column": 1
+        },
+        {
+          "title": "lost checkout response recovers the same order after refresh even when its offer is disabled",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 3,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 6269,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-10T16:38:00.163Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "109864117818eee9cf27-0af2d656cfded45dea65",
+          "file": "stage3.spec.ts",
+          "line": 49,
+          "column": 1
+        },
+        {
+          "title": "regular device binding and monthly concurrency are enforced across customer browser profiles",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 3,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 14280,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-10T16:38:06.467Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "109864117818eee9cf27-f175b53bff0dc28b38ab",
+          "file": "stage3.spec.ts",
+          "line": 64,
+          "column": 1
+        },
+        {
+          "title": "customer checkout fits 360px and validates contact using keyboard",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 3,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 5131,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-10T16:38:20.785Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "109864117818eee9cf27-f7ab62f99af3d8aa56df",
+          "file": "stage3.spec.ts",
+          "line": 77,
+          "column": 35
+        },
+        {
+          "title": "customer checkout fits 768px and validates contact using keyboard",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 3,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 6543,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-10T16:38:25.952Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "109864117818eee9cf27-c4951cf67328304745bc",
+          "file": "stage3.spec.ts",
+          "line": 77,
+          "column": 35
+        },
+        {
+          "title": "customer checkout fits 1440px and validates contact using keyboard",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 3,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 12140,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByTestId('voucher-code')\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByTestId('voucher-code') with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByTestId('voucher-code')\u001b[22m\n",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByTestId('voucher-code')\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByTestId('voucher-code') with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByTestId('voucher-code')\u001b[22m\n\n    at C:\\Users\\zil\\Documents\\Triple_S_OS\\tests\\stage3.spec.ts:90:128",
+                    "location": {
+                      "file": "C:\\Users\\zil\\Documents\\Triple_S_OS\\tests\\stage3.spec.ts",
+                      "column": 128,
+                      "line": 90
+                    },
+                    "snippet": "  88 |   await expect(page.locator('.payment-illustration')).toContainText('Tidak dapat dipindai atau ditransaksikan')\n  89 |   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);await page.evaluate(()=>scrollTo(0,0));await page.screenshot({path:`${evidence}/payment-${width}.png`,fullPage:true})\n> 90 |   await page.getByRole('button',{name:'Simulasikan pembayaran sukses'}).click();await expect(page.getByTestId('voucher-code')).toBeVisible()\n     |                                                                                                                                ^\n  91 |   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);await page.evaluate(()=>scrollTo(0,0));await page.screenshot({path:`${evidence}/voucher-${width}.png`,fullPage:true})\n  92 | })\n  93 |"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "C:\\Users\\zil\\Documents\\Triple_S_OS\\tests\\stage3.spec.ts",
+                        "column": 128,
+                        "line": 90
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByTestId('voucher-code')\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByTestId('voucher-code') with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByTestId('voucher-code')\u001b[22m\n\n\n  88 |   await expect(page.locator('.payment-illustration')).toContainText('Tidak dapat dipindai atau ditransaksikan')\n  89 |   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);await page.evaluate(()=>scrollTo(0,0));await page.screenshot({path:`${evidence}/payment-${width}.png`,fullPage:true})\n> 90 |   await page.getByRole('button',{name:'Simulasikan pembayaran sukses'}).click();await expect(page.getByTestId('voucher-code')).toBeVisible()\n     |                                                                                                                                ^\n  91 |   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);await page.evaluate(()=>scrollTo(0,0));await page.screenshot({path:`${evidence}/voucher-${width}.png`,fullPage:true})\n  92 | })\n  93 |\n    at C:\\Users\\zil\\Documents\\Triple_S_OS\\tests\\stage3.spec.ts:90:128"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-10T16:38:32.531Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "C:\\Users\\zil\\Documents\\Triple_S_OS\\test-results\\stage3-customer-checkout-f-6194c-ates-contact-using-keyboard\\test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "C:\\Users\\zil\\Documents\\Triple_S_OS\\test-results\\stage3-customer-checkout-f-6194c-ates-contact-using-keyboard\\error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "C:\\Users\\zil\\Documents\\Triple_S_OS\\test-results\\stage3-customer-checkout-f-6194c-ates-contact-using-keyboard\\trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "C:\\Users\\zil\\Documents\\Triple_S_OS\\tests\\stage3.spec.ts",
+                    "column": 128,
+                    "line": 90
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "109864117818eee9cf27-3db823ce1d642bed15ea",
+          "file": "stage3.spec.ts",
+          "line": 77,
+          "column": 35
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-09-10T16:32:16.586Z",
+    "duration": 389512.288,
+    "expected": 28,
+    "skipped": 0,
+    "unexpected": 4,
+    "flaky": 0
+  }
+}

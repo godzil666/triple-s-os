@@ -1,0 +1,93 @@
+import { test, expect, type Page } from '@playwright/test'
+import { loginAs, testOrigin } from './helpers/auth'
+const evidence=process.env.EVIDENCE_DIR??'docs/verification/stage3'
+test.setTimeout(90_000)
+async function buy(page:Page, monthly=false) {
+  await page.goto('/mitra/demo-cisaat/paket')
+  await page.getByRole('link',{name:monthly?'Pilih Bulanan · 2 perangkat':'Pilih Reguler · 3 jam',exact:true}).click()
+  await page.getByLabel('Nama customer').fill('Pelanggan Demo')
+  await page.getByLabel('Nomor WhatsApp').fill('0812-3456-7890')
+  await page.getByRole('button',{name:'Review pesanan'}).click()
+  await expect(page.getByText('+6281234567890',{exact:true})).toBeVisible()
+  await page.getByRole('button',{name:'Buat pesanan simulasi'}).click()
+  await expect(page).toHaveURL(/\/pesanan\/[a-f0-9]{64}$/)
+}
+test('customer buys before arrival, survives refresh, activates later without entering a code, and keeps expiry',async({page})=>{
+  await page.context().grantPermissions(['clipboard-read','clipboard-write']);await page.bringToFront();await buy(page);const url=page.url()
+  await expect(page.getByTestId('payment-status')).toHaveText('Menunggu pembayaran')
+  await page.getByRole('button',{name:'Simulasikan pembayaran sukses'}).click()
+  await expect(page.getByText('Voucher siap digunakan',{exact:true})).toBeVisible()
+  await expect(page.getByText('Belum aktif — durasi belum dimulai',{exact:true})).toBeVisible()
+  await page.getByRole('button',{name:'Salin kode voucher',exact:true}).click();await expect(page.getByText(/^Disalin\./)).toBeVisible()
+  await page.reload();await expect(page).toHaveURL(url)
+  await page.getByRole('button',{name:'Sambungkan WiFi simulasi',exact:true}).click()
+  await expect(page.getByRole('alert')).toContainText('pengaturan WiFi')
+  await page.getByLabel('Jaringan perangkat mock').selectOption('site-demo-cibadak')
+  await page.getByRole('button',{name:'Sambungkan WiFi simulasi',exact:true}).click();await expect(page.getByRole('alert')).toContainText('mitra lain')
+  await page.getByLabel('Jaringan perangkat mock').selectOption('site-demo-cisaat')
+  await page.getByRole('button',{name:'Sambungkan WiFi simulasi',exact:true}).click();await expect(page.getByText('Sesi WiFi simulasi aktif',{exact:true})).toBeVisible()
+  const expiry=await page.getByTestId('expires-at').textContent()
+  await page.getByRole('link',{name:'Buka detail voucher'}).click();await expect(page).toHaveURL(/\/voucher\/[a-f0-9]{64}$/)
+  await page.reload();await expect(page.getByTestId('expires-at')).toHaveText(expiry!)
+  await page.screenshot({path:`${evidence}/voucher-active.png`,fullPage:true})
+})
+test('payment failed and timeout recover on same order; paid provisioning/WhatsApp failures never require repayment',async({page})=>{
+  await page.context().grantPermissions(['clipboard-read','clipboard-write']);await page.bringToFront();await buy(page);const url=page.url()
+  await page.getByText('Kontrol simulasi transaksi',{exact:true}).click()
+  await page.getByLabel('Hasil pembayaran demo').selectOption('failed');await page.getByRole('button',{name:'Jalankan hasil pembayaran'}).click();await expect(page.getByTestId('payment-status')).toHaveText('Pembayaran gagal')
+  await page.getByLabel('Hasil pembayaran demo').selectOption('expired');await page.getByRole('button',{name:'Jalankan hasil pembayaran'}).click();await expect(page.getByTestId('payment-status')).toHaveText('Pembayaran timeout')
+  await page.getByLabel('Hasil penerbitan demo').selectOption('failed');await page.getByLabel('Hasil WhatsApp demo').selectOption('failed')
+  await page.getByRole('button',{name:'Simulasikan pembayaran sukses'}).click();await expect(page.getByText('Pembayaran diterima. Voucher perlu bantuan.',{exact:true})).toBeVisible();await expect(page.getByRole('button',{name:'Simulasikan pembayaran sukses'})).toHaveCount(0)
+  await page.screenshot({path:`${evidence}/paid-provisioning-failed.png`,fullPage:true})
+  await page.getByLabel('Hasil penerbitan demo').selectOption('pending');await page.getByRole('button',{name:'Coba penerbitan simulasi'}).click();await expect(page.getByText('Voucher sedang diproses',{exact:true})).toBeVisible()
+  await page.getByLabel('Hasil penerbitan demo').selectOption('issued');await page.getByRole('button',{name:'Coba penerbitan simulasi'}).click()
+  await expect(page.getByText('WhatsApp simulasi gagal',{exact:true})).toBeVisible();await expect(page.getByTestId('voucher-code')).toBeVisible()
+  await page.screenshot({path:`${evidence}/whatsapp-failed-voucher-retained.png`,fullPage:true})
+  const code=await page.getByTestId('voucher-code').textContent()
+  await page.getByLabel('Hasil WhatsApp demo').selectOption('sent');await page.getByRole('button',{name:'Ulangi notifikasi simulasi'}).click();await expect(page.getByText('WhatsApp simulasi terkirim',{exact:true})).toBeVisible();await expect(page.getByTestId('voucher-code')).toHaveText(code!);await expect(page).toHaveURL(url)
+})
+test('lost checkout response recovers the same order after refresh even when its offer is disabled',async({page,browser})=>{
+  await page.goto('/mitra/demo-cisaat/paket');await page.getByRole('link',{name:'Pilih Reguler · 3 jam',exact:true}).click()
+  await page.getByLabel('Nama customer').fill('Recovery Demo');await page.getByLabel('Nomor WhatsApp').fill('081234567890');await page.getByRole('button',{name:'Review pesanan'}).click()
+  let savedToken=''
+  await page.route('**/api/customer/checkout',async route=>{const response=await route.fetch();savedToken=(await response.json()).order.token;await route.abort()})
+  await page.getByRole('button',{name:'Buat pesanan simulasi'}).click();await expect(page.getByRole('alert')).toContainText('Layanan lokal')
+  const context=await browser.newContext({baseURL:testOrigin}),owner=await context.newPage();const auth=await loginAs(owner)
+  const toggle=(available:boolean)=>owner.request.post('/api/service',{headers:{origin:testOrigin,'x-csrf-token':auth.csrfToken},data:{service:'partners',method:'updateOffer',args:['demo-cisaat','regular-3h',{available}]}})
+  try {
+    expect((await toggle(false)).status()).toBe(200)
+    await page.unroute('**/api/customer/checkout');await page.reload();await page.getByRole('button',{name:'Buat pesanan simulasi'}).click()
+    await expect(page).toHaveURL(new RegExp(`/pesanan/${savedToken}$`))
+    const state=await(await owner.request.get('/api/state')).json();expect(state.orders.filter((o:{token:string})=>o.token===savedToken)).toHaveLength(1)
+  }finally{await toggle(true);await context.close()}
+})
+test('regular device binding and monthly concurrency are enforced across customer browser profiles',async({page,browser})=>{
+  const b=await browser.newContext({baseURL:testOrigin}),c=await browser.newContext({baseURL:testOrigin})
+  const second=await b.newPage(),third=await c.newPage()
+  const connect=async(p:Page)=>{await p.getByLabel('Jaringan perangkat mock').selectOption('site-demo-cisaat');await p.getByRole('button',{name:'Sambungkan WiFi simulasi',exact:true}).click()}
+  try {
+    await buy(page);await page.getByRole('button',{name:'Simulasikan pembayaran sukses'}).click();await connect(page)
+    await second.goto(page.url());await connect(second);await expect(second.getByRole('alert')).toContainText('perangkat pertama')
+    await buy(page,true);await page.getByRole('button',{name:'Simulasikan pembayaran sukses'}).click();await connect(page)
+    await second.goto(page.url());await connect(second);await expect(second.getByText('Sesi WiFi simulasi aktif',{exact:true})).toBeVisible()
+    await third.goto(page.url());await connect(third);await expect(third.getByRole('alert')).toContainText('Slot bulanan penuh')
+    await second.getByRole('button',{name:'Keluar dari sesi simulasi'}).click();await connect(third);await expect(third.getByText('Sesi WiFi simulasi aktif',{exact:true})).toBeVisible()
+  }finally{await b.close();await c.close()}
+})
+for(const width of [360,768,1440])test(`customer checkout fits ${width}px and validates contact using keyboard`,async({page})=>{
+  await page.setViewportSize({width,height:960});await page.goto('/mitra/demo-cisaat/paket')
+  await expect(page.locator('h1')).toBeVisible();expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true)
+  await page.screenshot({path:`${evidence}/packages-${width}.png`,fullPage:true})
+  await page.getByRole('link',{name:'Pilih Reguler · 3 jam',exact:true}).click()
+  if(width===768)await page.getByLabel('Metode pembayaran simulasi').selectOption('ewallet')
+  await page.getByLabel('Nama customer').fill('Demo');await page.getByLabel('Nomor WhatsApp').fill('abc081234567890')
+  await page.getByRole('button',{name:'Review pesanan'}).focus();await page.keyboard.press('Enter');await expect(page.getByRole('alert')).toContainText('WhatsApp')
+  await page.getByLabel('Nomor WhatsApp').fill('081234567890');await page.getByRole('button',{name:'Review pesanan'}).click()
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);await page.evaluate(()=>scrollTo(0,0));await page.screenshot({path:`${evidence}/review-${width}.png`,fullPage:true})
+  await page.getByRole('button',{name:'Buat pesanan simulasi'}).click();await expect(page.getByTestId('payment-status')).toHaveText('Menunggu pembayaran')
+  await expect(page.locator('.payment-illustration')).toContainText('Tidak dapat dipindai atau ditransaksikan')
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);await page.evaluate(()=>scrollTo(0,0));await page.screenshot({path:`${evidence}/payment-${width}.png`,fullPage:true})
+  await page.getByRole('button',{name:'Simulasikan pembayaran sukses'}).click();await expect(page.getByTestId('voucher-code')).toBeVisible()
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);await page.evaluate(()=>scrollTo(0,0));await page.screenshot({path:`${evidence}/voucher-${width}.png`,fullPage:true})
+})
+
