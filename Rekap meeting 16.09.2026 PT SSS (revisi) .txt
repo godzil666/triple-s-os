@@ -1,0 +1,36 @@
+Rekap Update PT SSS
+
+1. Payment gateway terpusat di PT SSS.
+- semua pembayaran voucher online terpusat di rekening atau payment gateway milik PT. SSS. jika ada voucher online di mitra tertentu, mitra akan menerima komisi
+
+2. dashboard Owner ingin menambahkan fitur untuk membagi Mitra by admin/staff dan atau by mitra di lokasi yang tidak jauh dari lokasi admin/staff.
+- contoh " admin/staff A Hanya memiliki tanggung jawab memegang dan memantau mitra 1,2,3,4,5 "
+- contoh " seluruh Mitra di girijaya hanya bisa di pantau oleh admin/staff yang berada tidak jauh dari lokasi tersebut  "
+- Alasannya ada beberapa admin/staff yang di tugaskan di lokasi tertentu saja, ini membuat jika ada wifi/hotspot error otomatis notifikasi error cuma ada di admin/staff tertentu saja
+
+3. Fitur tambahan untuk dashboard admin dan staff
+" Admin dapat memilihat statistik pemakaian user dari setiap mitra yg menjadi tanggung jawabnya,
+Studi case 1 :
+- Mitra 1 Memiliki user yg lebih dominan bermain game.
+- Mitra 2 memiliki user yg dominan menggunakan sosial media.
+Statistik ini hanya dapat di lihat di dashboard admin, staff dan owner.
+Studi case 2 :
+- Akun Owner dapat mengatur jaringan mitra sesuai dengan staistik penggunaan user.
+
+4. Saat perangkat tersambung ke SSID dan masuk ke halaman captive portal untuk login wifi, halaman otomatis masuk ke captive portal mitra dengan membaca SSID dan "pilih mitra" otomatis tidak akan muncul.
+jika user tidak bisa masuk ke captive portal, user mencari manual di web app login page " pilih mitra ". captive portal membaca kode unik dari SSID yang mengandung lokasi atau nama mitra
+- contoh SSID "Sizi-Net", captive portal otomatis masuk ke login page mitra/nama hotspot yang bernama "Sizi-Net"
+
+5. contoh kode voucher
+"Sizi-0748" dan atau "Sizi-1-0748" (Sizi = nama hotspot mitra, 1 = kode jika mitra memiliki lebih dari satu titik hotspot , 0748 = kode voucher)
+Voucher dengan kode unik seperti di atas, hanya dapat di gunakan di jaringan mitra terkait saja, tidak bisa di di gunakan di mitra lain.
+
+6. halaman login memiliki 2 pilihan login :
+- untuk voucher sekali pakai memiliki format login "kode voucher"
+- untuk member memiliki format login "Username dan Password"
+
+7. pada halam login voucher ada tambahan fitur scan barcode voucher.
+
+8. staff dan admin yang tanggung jawab di mitra terkait, dapat melihat dan mendapatkan peringatan mengenai error yg di alami mitra. ( untuk lebih jelasnya ada di point no. 2 )
+
+9. tambahkan halaman pembelian voucher online dihalaman login/captive portal

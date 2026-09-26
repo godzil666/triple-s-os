@@ -49,7 +49,7 @@ for (const width of [360, 768, 1440]) {
     await panel.getByRole('button', { name: 'Reset data demo', exact: true }).focus()
     await page.keyboard.press('Tab')
     await expect(panel.getByRole('button', { name: 'Tutup dialog', exact: true })).toBeFocused()
-    await page.screenshot({ path: `${process.env.EVIDENCE_DIR??'docs/verification/auth-hotspot'}/panel-${width}.png`, fullPage: true })
+    await page.screenshot({ path: `${process.env.EVIDENCE_DIR??'docs/verification/auth-hotspot'}/panel-${width}.png`, fullPage: false })
     await page.keyboard.press('Escape')
     await expect(page.getByRole('button', { name: 'Kontrol demo', exact: true })).toBeFocused()
   })

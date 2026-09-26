@@ -9,19 +9,19 @@ import { customerService } from '../../services/customer-http'
 import type { Catalog, Offer } from '../../services/customer-contracts'
 import { Flow, LoadState, Summary, draftKey, errorMessage, useCatalog } from './purchase-shared'
 import { isProduction } from '../../config/runtime'
-interface Draft { version:1; partnerId:string; packageId:string; name:string; whatsapp:string; channel:'qris'|'ewallet'; requestKey:string; phase:'details'|'review'; locked:boolean; token?:string; reviewed?:{catalog:Pick<Catalog,'partner'|'site'>;offer:Offer} }
-function readDraft(partnerId:string,packageId:string):Draft {
-  try{const d=JSON.parse(sessionStorage.getItem(draftKey)??'null');if(d?.version===1&&d.partnerId===partnerId&&d.packageId===packageId&&typeof d.requestKey==='string')return d}catch{/* Start an empty draft. */}
-  return {version:1,partnerId,packageId,name:'',whatsapp:'',channel:'qris',requestKey:crypto.randomUUID(),phase:'details',locked:false}
+interface Draft { version:2; partnerId:string; packageId:string; hotspotId:string; name:string; whatsapp:string; channel:'qris'|'ewallet'; requestKey:string; phase:'details'|'review'; locked:boolean; token?:string; reviewed?:{catalog:Pick<Catalog,'partner'|'site'|'hotspot'>;offer:Offer} }
+function readDraft(partnerId:string,packageId:string,hotspotId:string):Draft {
+  try{const d=JSON.parse(sessionStorage.getItem(draftKey)??'null');if(d?.version===2&&d.partnerId===partnerId&&d.packageId===packageId&&d.hotspotId===hotspotId&&typeof d.requestKey==='string')return d}catch{/* Start an empty draft. */}
+  return {version:2,partnerId,packageId,hotspotId,name:'',whatsapp:'',channel:'qris',requestKey:crypto.randomUUID(),phase:'details',locked:false}
 }
 export function CheckoutPage() {
-  const [params]=useSearchParams(),partnerId=params.get('mitra')??'',packageId=params.get('paket')??''
+  const [params]=useSearchParams(),partnerId=params.get('mitra')??'',packageId=params.get('paket')??'',hotspotId=params.get('hotspot')??''
   if (isProduction) return <Flow title="Pembelian online belum diaktifkan" step={2}><Card className="checkout-form"><h2>Layanan pembayaran sedang disiapkan</h2><p>Integrasi pembayaran terpusat PT. SSS dan penerbitan voucher belum dikonfigurasi pada lingkungan ini. Tidak ada transaksi yang dapat dibuat dari halaman ini.</p><a className="button button--primary" href={import.meta.env.VITE_ADMIN_WHATSAPP_URL || 'https://wa.me/?text=Halo%20Admin%20SSS%2C%20saya%20ingin%20menanyakan%20pembelian%20WiFi.'} target="_blank" rel="noreferrer">Hubungi admin SSS</a><Link className="flow-back" to={partnerId ? `/mitra/${encodeURIComponent(partnerId)}/paket` : '/'}>Kembali ke pilihan paket</Link></Card></Flow>
-  return <CheckoutForm key={`${partnerId}:${packageId}`} partnerId={partnerId} packageId={packageId}/>
+  return <CheckoutForm key={`${partnerId}:${packageId}:${hotspotId}`} partnerId={partnerId} packageId={packageId} hotspotId={hotspotId}/>
 }
-function CheckoutForm({partnerId,packageId}:{partnerId:string;packageId:string}) {
-  const navigate=useNavigate(),{catalog:liveCatalog,error:catalogError,retry}=useCatalog(partnerId)
-  const [draft,setDraft]=useState(()=>readDraft(partnerId,packageId)),[error,setError]=useState(''),[busy,setBusy]=useState(false)
+function CheckoutForm({partnerId,packageId,hotspotId}:{partnerId:string;packageId:string;hotspotId:string}) {
+  const navigate=useNavigate(),{catalog:liveCatalog,error:catalogError,retry}=useCatalog(partnerId,hotspotId||undefined)
+  const [draft,setDraft]=useState(()=>readDraft(partnerId,packageId,hotspotId)),[error,setError]=useState(''),[busy,setBusy]=useState(false)
   useEffect(()=>{try{sessionStorage.setItem(draftKey,JSON.stringify(draft))}catch{setError('Penyimpanan tab tidak tersedia. Aktifkan penyimpanan lokal sebelum membuat pesanan agar refresh dapat dipulihkan.')}},[draft])
   if(!partnerId||!packageId)return <Flow title="Pilih paket terlebih dahulu" step={2}><p>Nama mitra dan paket diperlukan sebelum checkout.</p><Link className="button button--primary" to="/">Pilih nama mitra</Link></Flow>
   if(draft.token)return <Flow title="Pesanan sudah tersimpan" step={2}><p>Gunakan pesanan yang sama setelah refresh, meskipun katalog berubah.</p><Link className="button button--primary" to={`/pesanan/${draft.token}`}>Lanjutkan pesanan tersimpan</Link></Flow>
@@ -29,14 +29,14 @@ function CheckoutForm({partnerId,packageId}:{partnerId:string;packageId:string})
   if(!catalog)return <LoadState error={catalogError} retry={retry}/>
   const offer=(draft.phase==='review'?draft.reviewed?.offer:null)??liveCatalog?.offers.find(o=>o.package.id===packageId)
   if(!offer)return <Flow title="Paket tidak tersedia" step={2}><p>Periksa kembali pilihan paket {catalog.partner.name}.</p><Link to={`/mitra/${partnerId}/paket`}>Kembali ke paket</Link></Flow>
-  const review=()=>{try{const normalized=normalizeCustomer(draft.name,draft.whatsapp);setDraft({...draft,name:normalized.customerName,whatsapp:normalized.customerWhatsapp,phase:'review',reviewed:{catalog:{partner:catalog.partner,site:catalog.site},offer}});setError('')}catch(e){setError(errorMessage(e))}}
+  const review=()=>{try{const normalized=normalizeCustomer(draft.name,draft.whatsapp);setDraft({...draft,name:normalized.customerName,whatsapp:normalized.customerWhatsapp,phase:'review',reviewed:{catalog:{partner:catalog.partner,site:catalog.site,hotspot:catalog.hotspot},offer}});setError('')}catch(e){setError(errorMessage(e))}}
   const create=async()=>{
     if(busy)return
     setBusy(true);setError('')
     const locked={...draft,locked:true}
     try {
       sessionStorage.setItem(draftKey,JSON.stringify(locked));setDraft(locked)
-      const result=await customerService.checkout({partnerId,packageId,quote:offer.quote,customerName:draft.name,customerWhatsapp:draft.whatsapp,channel:draft.channel,requestKey:draft.requestKey})
+      const result=await customerService.checkout({partnerId,hotspotId:catalog.hotspot.id,packageId,quote:offer.quote,customerName:draft.name,customerWhatsapp:draft.whatsapp,channel:draft.channel,requestKey:draft.requestKey})
       const saved={...locked,token:result.order.token};setDraft(saved)
       try{sessionStorage.setItem(draftKey,JSON.stringify(saved))}catch{/* The earlier persisted request key recovers this same order. */}
       navigate(`/pesanan/${result.order.token}`,{replace:true})

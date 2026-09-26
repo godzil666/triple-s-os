@@ -3,7 +3,8 @@ import type { DemoState, Order } from '../domain/models.ts'
 import type { DemoStore } from '../domain/store.ts'
 import type { Services } from './contracts.ts'
 import { expireSessions } from '../domain/store.ts'
-import { makeVoucher } from '../domain/fixtures.ts'
+import { defaultHotspotId, makeVoucher } from '../domain/fixtures.ts'
+import { checkLowStock, upsertAlert } from '../domain/operations.ts'
 
 function requireValue<T>(value: T | undefined, code = 'NOT_FOUND'): T { if (value === undefined) throw new Error(code); return value }
 function invalid(condition: boolean) { if (condition) throw new Error('INVALID_INPUT') }
@@ -30,23 +31,27 @@ export function createMockServices(store: DemoStore, options: { orderToken?: () 
           if (input.checkoutKey) {
             const previous = s.orders.find(o => o.checkoutKey === input.checkoutKey)
             if (previous) {
-              if (previous.partnerId !== input.partnerId || previous.packageSnapshot.id !== input.packageId || previous.customerName !== input.customerName.trim() || previous.customerWhatsapp !== input.customerWhatsapp || previous.channel !== input.channel) throw new Error('CHECKOUT_CONFLICT')
+              if (previous.partnerId !== input.partnerId || previous.packageSnapshot.id !== input.packageId || previous.hotspotId !== (input.hotspotId ?? defaultHotspotId(previous.siteId)) || previous.customerName !== input.customerName.trim() || previous.customerWhatsapp !== input.customerWhatsapp || previous.channel !== input.channel) throw new Error('CHECKOUT_CONFLICT')
               return previous
             }
           }
           const partner = requireValue(s.partners.find(p => p.id === input.partnerId), 'PARTNER_NOT_FOUND')
           if (!partner.active) throw new Error('PARTNER_INACTIVE')
           const site = requireValue(s.sites.find(site => site.partnerId === partner.id), 'SITE_NOT_FOUND')
+          const hotspotId = input.hotspotId ?? defaultHotspotId(site.id)
+          const hotspot = requireValue(s.hotspots.find(h => h.id === hotspotId && h.siteId === site.id), 'HOTSPOT_NOT_FOUND')
+          if (!hotspot.active) throw new Error('HOTSPOT_UNAVAILABLE')
           const pkg = requireValue(s.packages.find(p => p.id === input.packageId), 'PACKAGE_NOT_FOUND')
           const offer = requireValue(s.partnerPackages.find(p => p.partnerId === partner.id && p.packageId === pkg.id), 'PACKAGE_UNAVAILABLE')
           if (pkg.archived || !offer.available) throw new Error('PACKAGE_UNAVAILABLE')
+          if (!s.inventoryPools.some(pool => pool.hotspotId === hotspotId && pool.packageId === pkg.id && pool.available > 0)) throw new Error('PACKAGE_UNAVAILABLE')
           invalid(!input.customerName.trim() || input.customerName.length > 80 || !/^(DEMO-WA-[\w-]{1,40}|\+628\d{8,11})$/.test(input.customerWhatsapp) || !['qris', 'ewallet'].includes(input.channel))
           const orderId = id(s, 'order')
-          const order: Order = { id: orderId, token: `DEMO-${orderId}`, partnerId: partner.id, siteId: site.id, packageSnapshot: structuredClone(pkg), rateSnapshot: { ratePercent: offer.commissionRatePercent, basisRp: offer.priceRp, basis: 'gross-before-fees', rounding: 'nearest-rupiah', assumptionLabel: `Asumsi demo: ${offer.commissionRatePercent}% gross sebelum biaya, pembulatan rupiah terdekat.` }, customerName: input.customerName.trim(), customerWhatsapp: input.customerWhatsapp, amountRp: offer.priceRp, channel: input.channel, status: 'created', provisioningStatus: 'pending', createdAt: s.clockNow }
+          const order: Order = { id: orderId, token: `DEMO-${orderId}`, partnerId: partner.id, siteId: site.id, hotspotId, packageSnapshot: structuredClone(pkg), rateSnapshot: { ratePercent: offer.commissionRatePercent, basisRp: offer.priceRp, basis: 'gross-before-fees', rounding: 'nearest-rupiah', assumptionLabel: `Asumsi demo: ${offer.commissionRatePercent}% gross sebelum biaya, pembulatan rupiah terdekat.` }, customerName: input.customerName.trim(), customerWhatsapp: input.customerWhatsapp, amountRp: offer.priceRp, channel: input.channel, status: 'created', provisioningStatus: 'pending', createdAt: s.clockNow }
           s.orders.push(order)
           if (options.orderToken) order.token = options.orderToken()
           if (input.checkoutKey) order.checkoutKey = input.checkoutKey
-          s.payments.push({ id: id(s, 'payment'), orderId, status: 'pending', paidAt: null, provider: 'mock' })
+          s.payments.push({ id: id(s, 'payment'), orderId, status: 'pending', paidAt: null, provider: 'mock', merchant: 'PT_SSS' })
           audit(s, 'order.created', orderId)
           return order
         })
@@ -84,7 +89,11 @@ export function createMockServices(store: DemoStore, options: { orderToken?: () 
           order.provisioningStatus = status
           audit(s, `provisioning.${order.provisioningStatus}`, orderId)
           if (order.provisioningStatus !== 'issued') return null
-          const voucher = makeVoucher(id(s, 'voucher'), order.partnerId, order.siteId, order.packageSnapshot, orderId, null)
+          const pool = requireValue(s.inventoryPools.find(pool => pool.hotspotId === order.hotspotId && pool.packageId === order.packageSnapshot.id), 'INVENTORY_NOT_FOUND')
+          if (pool.available === 0) { order.provisioningStatus = 'failed'; checkLowStock(s,order.hotspotId,order.packageSnapshot.id); upsertAlert(s,{type:'allocation_failed',hotspotId:order.hotspotId,packageId:order.packageSnapshot.id,orderId,severity:'critical',message:`Penerbitan voucher pesanan ${orderId} gagal: stok habis.`}); audit(s, 'provisioning.out_of_stock', orderId); return null }
+          pool.available--
+          checkLowStock(s,order.hotspotId,order.packageSnapshot.id)
+          const voucher = makeVoucher(id(s, 'voucher'), order.partnerId, order.siteId, order.packageSnapshot, orderId, null, order.hotspotId)
           s.vouchers.push(voucher)
           return voucher
         })
@@ -95,7 +104,11 @@ export function createMockServices(store: DemoStore, options: { orderToken?: () 
           const voucher = requireValue(s.vouchers.find(v => v.id === input.voucherId), 'VOUCHER_NOT_FOUND')
           if (voucher.status === 'expired' || (voucher.expiresAt && Date.parse(voucher.expiresAt) <= Date.parse(s.clockNow))) throw new Error('VOUCHER_EXPIRED')
           if (voucher.siteId !== input.siteId) throw new Error('WRONG_SITE')
+          const hotspotId = input.hotspotId ?? defaultHotspotId(input.siteId)
+          if (voucher.hotspotId !== hotspotId) throw new Error('WRONG_HOTSPOT')
           const site = requireValue(s.sites.find(site => site.id === input.siteId), 'SITE_NOT_FOUND')
+          const hotspot = requireValue(s.hotspots.find(h => h.id === hotspotId && h.siteId === site.id), 'HOTSPOT_NOT_FOUND')
+          if (!hotspot.active) throw new Error('HOTSPOT_UNAVAILABLE')
           if (site.mockAvailability !== 'online') throw new Error('SITE_UNAVAILABLE')
           if (voucher.kind === 'regular' && voucher.deviceBinding && voucher.deviceBinding !== input.deviceId) throw new Error('DEVICE_BOUND')
           const sessions = s.sessions.filter(session => session.voucherId === voucher.id && session.endedAt === null)
@@ -108,7 +121,7 @@ export function createMockServices(store: DemoStore, options: { orderToken?: () 
             voucher.status = 'active'
             if (voucher.kind === 'regular') voucher.deviceBinding = input.deviceId
           }
-          const session = { id: id(s, 'session'), voucherId: voucher.id, partnerId: voucher.partnerId, siteId: voucher.siteId, deviceId: input.deviceId, startedAt: s.clockNow, lastSeenAt: s.clockNow, endedAt: null, endReason: null }
+          const session = { id: id(s, 'session'), voucherId: voucher.id, partnerId: voucher.partnerId, siteId: voucher.siteId, hotspotId, deviceId: input.deviceId, startedAt: s.clockNow, lastSeenAt: s.clockNow, endedAt: null, endReason: null }
           s.sessions.push(session)
           audit(s, 'voucher.login', voucher.id)
           return session
@@ -131,7 +144,7 @@ export function createMockServices(store: DemoStore, options: { orderToken?: () 
           const status = requestedStatus ?? s.scenarios.notification
           invalid(!['sent', 'failed'].includes(status))
           const attempt = { id: id(s, 'notification'), orderId, status, attemptedAt: s.clockNow, provider: 'mock' as const, error: status === 'failed' ? 'Pengiriman mock gagal' : null }
-          s.notifications.push(attempt); audit(s, `notification.${attempt.status}`, orderId)
+          s.notifications.push(attempt); if(status==='failed')upsertAlert(s,{type:'delivery_failed',hotspotId:s.orders.find(o=>o.id===orderId)!.hotspotId,packageId:null,orderId,severity:'warning',message:`Notifikasi WhatsApp simulasi pesanan ${orderId} gagal; voucher tetap tersedia.`}); audit(s, `notification.${attempt.status}`, orderId)
           return attempt
         })
       },

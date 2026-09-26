@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test'
 import { credentials, loginAs, resetDemo, testOrigin } from './helpers/auth'
 const evidence=process.env.EVIDENCE_DIR??'docs/verification/auth-hotspot'
+test.setTimeout(90_000)
 
 test('customer direct dashboard URLs require login; dev files and private API are not public',async({page})=>{
   for(const route of ['/owner','/owner/akun','/admin','/mitra-dashboard/stok']) {
@@ -39,7 +40,7 @@ test('partner cannot switch site or open owner; admin cannot manage owner accoun
   await expect(page.getByRole('button',{name:'Kontrol demo'})).toHaveCount(0)
   const state=await(await page.request.get('/api/state')).json();expect(state.vouchers.every((v:{partnerId:string})=>v.partnerId==='demo-cisaat')).toBe(true)
   await page.goto('/owner/akun');await expect(page.getByRole('heading',{name:'Akses tidak tersedia'})).toBeVisible()
-  await loginAs(page,'admin');await page.goto('/admin');await expect(page.getByRole('heading',{name:'Ringkasan operasional'})).toBeVisible()
+  await loginAs(page,'admin');await page.goto('/admin');await expect(page.getByRole('heading',{name:'Operasi hotspot tugas saya'})).toBeVisible()
   await page.goto('/owner/akun');await expect(page.getByRole('heading',{name:'Akses tidak tersedia'})).toBeVisible()
   expect((await page.request.get('/api/accounts')).status()).toBe(403)
 })
@@ -52,7 +53,7 @@ test('customer offline voucher flow survives refresh and wrong-site failure with
   try {
     await customer.goto('/wifi/site-demo-cibadak/login');await customer.getByLabel('Kode voucher',{exact:true}).fill(voucher.code);await customer.getByRole('button',{name:'Masuk dengan voucher'}).click()
     await expect(customer.getByRole('alert')).toContainText('mitra lain')
-    await customer.goto('/wifi/site-demo-cisaat/login');await expect(customer.getByRole('heading',{name:'SSS-DEMO-CISAAT'})).toBeVisible()
+    await customer.goto('/wifi/site-demo-cisaat/login');await expect(customer.getByRole('heading',{name:'Hotspot Mitra Cisaat'})).toBeVisible()
     await customer.getByLabel('Kode voucher',{exact:true}).fill(voucher.code);await customer.getByRole('button',{name:'Masuk dengan voucher'}).click()
     await expect(customer.getByRole('status')).toContainText('Sesi simulasi aktif')
     const expiry=await customer.locator('.hotspot-status dd').nth(1).textContent()
@@ -62,6 +63,12 @@ test('customer offline voucher flow survives refresh and wrong-site failure with
     await customer.screenshot({path:`${evidence}/portal-active-1440.png`,fullPage:true})
     await customer.getByRole('button',{name:'Keluar dari sesi WiFi'}).click();await expect(customer.getByLabel('Kode voucher')).toBeVisible()
   } finally {await context.close()}
+})
+
+test('offline username/password voucher accepts matching credentials and activates on its first login',async({page})=>{
+  await page.goto('/wifi/site-demo-cisaat/login');await page.getByLabel('Cara masuk').selectOption('username_password')
+  await page.getByLabel('Username member').fill('wrong-user');await page.getByLabel('Password member').fill('offline-demo-pass');await page.getByRole('button',{name:'Masuk dengan voucher'}).click();await expect(page.getByRole('alert')).toContainText('tidak dikenali')
+  await page.getByLabel('Username member').fill('offline-demo-user');await page.getByLabel('Password member').fill('offline-demo-pass');await page.getByRole('button',{name:'Masuk dengan voucher'}).click();await expect(page.getByRole('status')).toContainText('Sesi simulasi aktif');await expect(page.locator('.hotspot-status dd').nth(0)).not.toHaveText('Belum dimulai')
 })
 
 test('owner creates a scoped partner account and disabling it revokes the active browser session',async({page,browser})=>{

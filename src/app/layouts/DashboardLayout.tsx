@@ -21,12 +21,14 @@ const partnerItems = [
 ]
 const ownerItems = [
   { to: '/admin', label: 'Ringkasan', icon: LayoutDashboard },
+  { to: '/admin/operasi', label: 'Pusat operasi', icon: Activity },
   { to: '/admin/mitra', label: 'Kelola mitra', icon: Building2 },
   { to: '/admin/paket', label: 'Paket internet', icon: Package },
   { to: '/admin/stok', label: 'Distribusi stok', icon: Boxes },
   { to: '/admin/transaksi', label: 'Transaksi', icon: ReceiptText },
   { to: '/admin/aktivitas', label: 'Log aktivitas', icon: Activity },
 ]
+const adminItems = [{ to: '/admin', label: 'Hotspot tugas saya', icon: LayoutDashboard }, { to: '/admin/operasi', label: 'Pusat operasi', icon: Activity }]
 
 export function DashboardLayout({ role }: { role: 'Mitra' | 'Admin' | 'Owner' }) {
   const [menuOpen, setMenuOpen] = useState(false)
@@ -34,7 +36,7 @@ export function DashboardLayout({ role }: { role: 'Mitra' | 'Admin' | 'Owner' })
   const { partnerId, setPartnerId, state } = useDemoContext()
   const presentationPartners = state.partners.map(p => ({ ...p, ssid: state.sites.find(s => s.partnerId === p.id)!.ssid }))
   const {user}=useAuth()
-  const items = role === 'Mitra' ? partnerItems : role==='Owner' ? [...ownerItems.map(item=>({...item,to:item.to.replace('/admin','/owner')})),{to:'/owner/akun',label:'Akun staf',icon:Users}] : ownerItems
+  const items = role === 'Mitra' ? partnerItems : role==='Owner' ? [...ownerItems.map(item=>({...item,to:item.to.replace('/admin','/owner')})),{to:'/owner/akun',label:'Akun staf',icon:Users}] : adminItems
   const partner = presentationPartners.find(item => item.id === partnerId)!
   return <div className="dashboard-shell"><VideoBackdrop />
     <aside className="sidebar">

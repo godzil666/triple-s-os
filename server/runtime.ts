@@ -10,7 +10,7 @@ const app = createApplication({ directory, allowedOrigins: [`http://127.0.0.1:${
 if (!app.accounts.list().length) {
   const credentials = [
     { username: 'owner', role: 'owner' as const },
-    { username: 'admin', role: 'admin' as const },
+    { username: 'admin', role: 'admin' as const, assignedHotspotIds: ['hotspot-site-demo-cisaat'] },
     { username: 'mitra.cisaat', role: 'partner' as const, partnerId: 'demo-cisaat' },
   ].map(account => ({ ...account, password: randomBytes(18).toString('base64url') }))
   for (const account of credentials) app.accounts.create(account)

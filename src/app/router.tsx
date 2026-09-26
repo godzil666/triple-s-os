@@ -14,6 +14,7 @@ import { PackagesPage } from '../features/customer/PackagesPage'
 import { CheckoutPage } from '../features/customer/CheckoutPage'
 import { OrderPage } from '../features/customer/OrderPage'
 import { PartnerPages } from '../features/partner/PartnerPages'
+import { OperationsPage } from '../features/operations/OperationsPage'
 
 const ownerPages = [
  {path:'mitra',view:'partners'}, {path:'mitra/:id',view:'partner'}, {path:'paket',view:'packages'}, {path:'stok',view:'stock'}, {path:'transaksi',view:'transactions'}, {path:'transaksi/:id',view:'transaction'}, {path:'aktivitas',view:'audit'},
@@ -25,6 +26,7 @@ export function AppRoutes() {
       <Route path="login" element={<LoginPage />} />
       <Route path="wifi" element={<HotspotPage />} />
       <Route path="wifi/:siteId/login" element={<HotspotPage />} />
+      <Route path="wifi/hotspot/:hotspotId/login" element={<HotspotPage />} />
       <Route path="mitra/:id/paket" element={<PackagesPage />} />
       <Route path="checkout" element={<CheckoutPage />} />
       <Route path="pesanan/:token" element={<OrderPage />} />
@@ -40,11 +42,12 @@ export function AppRoutes() {
       <Route path="pengguna" element={<PartnerPages key="sessions" view="sessions"/>}/>
     </Route></Route>
     <Route element={<RequireRole roles={['admin','owner']} />}><Route path="admin" element={<AdminLayout />}>
-      <Route index element={<OwnerPages view="overview" />} />
-      {ownerPages.map(page => <Route key={page.path} path={page.path} element={<OwnerPages key={page.view} view={page.view} />} />)}
+      <Route index element={<OperationsPage />} />
+      <Route path="operasi" element={<OperationsPage />} />
     </Route></Route>
     <Route element={<RequireRole roles={['owner']} />}><Route path="owner" element={<OwnerLayout />}>
       <Route index element={<OwnerPages view="overview" />} />
+      <Route path="operasi" element={<OperationsPage />} />
       <Route path="akun" element={<AccountsPage />} />
       {ownerPages.map(page=><Route key={page.path} path={page.path} element={<OwnerPages key={page.view} view={page.view} />} />)}
     </Route></Route>

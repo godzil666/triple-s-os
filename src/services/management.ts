@@ -1,6 +1,6 @@
 import type {DemoStore} from '../domain/store.ts'
 import type {DemoState,Package,Partner,OfflineBatch} from '../domain/models.ts'
-import {makeVoucher} from '../domain/fixtures.ts'
+import {defaultHotspotId,makeVoucher} from '../domain/fixtures.ts'
 export interface PartnerInput {name:string;area:string;note:string;ssid:string;active:boolean;ratePercent:number}
 export interface PackageInput {name:string;kind:Package['kind'];durationSeconds:number;maxConcurrentDevices:number;speedMbps:number;archived:boolean;priceRp:number}
 export interface BatchInput {partnerId:string;packageId:string;quantity:number;wholesaleUnitRp:number;exampleRetailUnitRp:number;stockPaymentReference:string;requestKey?:string}
@@ -23,8 +23,8 @@ export function createManagementService(store:DemoStore,actor='Simulasi domain',
    check(input && typeof input === 'object');const name=text(input.name,80,2),area=text(input.area,80,2),note=text(input.note,200,0),ssid=text(input.ssid,32,2),ratePercent=rate(input.ratePercent);check(typeof input.active==='boolean')
    check(!s.sites.some(site=>site.partnerId!==partnerId&&site.ssid.toLowerCase()===ssid.toLowerCase()))
    let p=partnerId?find(s.partners.find(p=>p.id===partnerId)):undefined
-   if(p){Object.assign(p,{name,area,note,active:input.active,defaultRatePercent:ratePercent});find(s.sites.find(site=>site.partnerId===p!.id)).ssid=ssid;for(const offer of s.partnerPackages.filter(o=>o.partnerId===p!.id))offer.commissionRatePercent=ratePercent}
-   else {p={id:id(s,'demo-mitra'),name,area,note,active:input.active,initials:name.slice(0,2).toUpperCase(),fictional:true,defaultRatePercent:ratePercent};s.partners.push(p);s.sites.push({id:`site-${p.id}`,partnerId:p.id,ssid,mockAvailability:'unknown'});s.partnerPackages.push(...s.packages.map(pkg=>({partnerId:p!.id,packageId:pkg.id,priceRp:pkg.catalogPriceRp??s.partnerPackages.find(o=>o.packageId===pkg!.id)?.priceRp??0,commissionRatePercent:ratePercent,available:false})))}
+   if(p){Object.assign(p,{name,area,note,active:input.active,defaultRatePercent:ratePercent});const site=find(s.sites.find(site=>site.partnerId===p!.id));site.ssid=ssid;find(s.hotspots.find(h=>h.id===defaultHotspotId(site.id))).ssid=ssid;for(const offer of s.partnerPackages.filter(o=>o.partnerId===p!.id))offer.commissionRatePercent=ratePercent}
+   else {p={id:id(s,'demo-mitra'),name,area,note,active:input.active,initials:name.slice(0,2).toUpperCase(),fictional:true,defaultRatePercent:ratePercent};s.partners.push(p);const providerId=`provider-${p.id}`,siteId=`site-${p.id}`,hotspotId=defaultHotspotId(siteId);s.providers.push({id:providerId,partnerId:p.id,name:`Provider ${name}`,fictional:true});s.sites.push({id:siteId,partnerId:p.id,providerId,ssid,mockAvailability:'unknown'});s.hotspots.push({id:hotspotId,siteId,name:`Hotspot ${name}`,ssid,active:true});s.telemetry.push({hotspotId,status:'unknown',users:0,latencyMs:null,usage:{gaming:0,social:0,streaming:0,other:0},observedAt:s.clockNow,pollFailed:false,source:'demo'});s.inventoryPools.push(...s.packages.map(pkg=>({id:`pool-${hotspotId}-${pkg.id}`,hotspotId,packageId:pkg.id,available:20,lowThreshold:10})));s.partnerPackages.push(...s.packages.map(pkg=>({partnerId:p!.id,packageId:pkg.id,priceRp:pkg.catalogPriceRp??s.partnerPackages.find(o=>o.packageId===pkg!.id)?.priceRp??0,commissionRatePercent:ratePercent,available:false})))}
    audit(s,partnerId?'partner.updated':'partner.created',p.id,`${name}; penjualan baru ${p.active?'aktif':'nonaktif'}; rate ${ratePercent}%; router dan voucher lama tetap`);return p
   })},
   async savePackage(packageId,input){return store.transact(s=>{
@@ -32,7 +32,7 @@ export function createManagementService(store:DemoStore,actor='Simulasi domain',
    const fields={name,kind:input.kind,durationSeconds:input.durationSeconds,maxConcurrentDevices:input.maxConcurrentDevices,speedMbps:input.speedMbps,archived:input.archived,catalogPriceRp:priceRp,assumptionLabel:'Paket, harga dan kecepatan contoh demo; durasi mulai login pertama.'}
    let pkg=packageId?find(s.packages.find(p=>p.id===packageId)):undefined
    if(pkg){Object.assign(pkg,fields);for(const offer of s.partnerPackages.filter(o=>o.packageId===pkg!.id))offer.priceRp=priceRp}
-   else{pkg={id:id(s,'package'),...fields};s.packages.push(pkg);s.partnerPackages.push(...s.partners.map(p=>({partnerId:p.id,packageId:pkg!.id,priceRp,commissionRatePercent:p.defaultRatePercent??s.partnerPackages.find(o=>o.partnerId===p!.id)?.commissionRatePercent??20,available:false})))}
+   else{pkg={id:id(s,'package'),...fields};s.packages.push(pkg);s.inventoryPools.push(...s.hotspots.map(h=>({id:`pool-${h.id}-${pkg!.id}`,hotspotId:h.id,packageId:pkg!.id,available:20,lowThreshold:10})));s.partnerPackages.push(...s.partners.map(p=>({partnerId:p.id,packageId:pkg!.id,priceRp,commissionRatePercent:p.defaultRatePercent??s.partnerPackages.find(o=>o.partnerId===p!.id)?.commissionRatePercent??20,available:false})))}
    audit(s,packageId?'package.updated':'package.created',pkg.id,`${name}; harga katalog ${priceRp} ke seluruh mitra; arsip ${pkg.archived}; riwayat tetap`);return pkg
   })},
   async saveOffer(partnerId,packageId,input){store.transact(s=>{
@@ -44,8 +44,9 @@ export function createManagementService(store:DemoStore,actor='Simulasi domain',
    const ref=text(input.stockPaymentReference,120,0)||null
    if(requestKey){const prior=s.offlineBatches.find(b=>b.requestKey===requestKey);if(prior){check(prior.partnerId===input.partnerId&&prior.packageSnapshot.id===input.packageId&&prior.quantity===input.quantity&&prior.wholesaleUnitRp===input.wholesaleUnitRp&&prior.exampleRetailUnitRp===input.exampleRetailUnitRp&&prior.stockPaymentReference===ref);return prior}}
    const p=find(s.partners.find(p=>p.id===input.partnerId)),site=find(s.sites.find(site=>site.partnerId===p!.id)),pkg=find(s.packages.find(pkg=>pkg.id===input.packageId));check(!pkg.archived);check(Number.isSafeInteger(input.quantity)&&input.quantity>0&&input.quantity<=500)
-   const batch:OfflineBatch={id:id(s,'batch'),partnerId:p.id,siteId:site.id,packageSnapshot:structuredClone(pkg),quantity:input.quantity,wholesaleUnitRp:amount(input.wholesaleUnitRp),exampleRetailUnitRp:amount(input.exampleRetailUnitRp),stockPaymentReference:ref,codeSource:'generated-demo',allocatedAt:s.clockNow,assumptionLabel:'Alokasi sintetis, bukan bukti terjual atau pembayaran diterima.',...(requestKey?{requestKey}:{})}
-   const used=new Set(s.vouchers.map(v=>v.code));for(let n=0;n<input.quantity;n++){const voucher=makeVoucher(id(s,'offline'),p.id,site.id,pkg,null,batch.id);voucher.code=code();if(used.has(voucher.code))throw new Error('DUPLICATE_CODE');used.add(voucher.code);s.vouchers.push(voucher)}
+   const hotspotId=defaultHotspotId(site.id)
+   const batch:OfflineBatch={id:id(s,'batch'),partnerId:p.id,siteId:site.id,hotspotId,packageSnapshot:structuredClone(pkg),quantity:input.quantity,wholesaleUnitRp:amount(input.wholesaleUnitRp),exampleRetailUnitRp:amount(input.exampleRetailUnitRp),stockPaymentReference:ref,codeSource:'generated-demo',allocatedAt:s.clockNow,assumptionLabel:'Alokasi sintetis, bukan bukti terjual atau pembayaran diterima.',...(requestKey?{requestKey}:{})}
+   const used=new Set(s.vouchers.map(v=>v.code));for(let n=0;n<input.quantity;n++){const voucher=makeVoucher(id(s,'offline'),p.id,site.id,pkg,null,batch.id,hotspotId);voucher.code=code();if(used.has(voucher.code))throw new Error('DUPLICATE_CODE');used.add(voucher.code);s.vouchers.push(voucher)}
    s.offlineBatches.push(batch);audit(s,'stock.allocated',batch.id,`${p.id}; ${pkg.id}; ${batch.quantity} kode baru; referensi ${ref??'belum ada'}; pembayaran belum diverifikasi`);return batch
   })},
  }

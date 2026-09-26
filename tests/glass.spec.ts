@@ -28,7 +28,8 @@ test('mobile uses lightweight source and SVG logo is present in header and foote
   for (const logo of await logos.all()) expect(await logo.evaluate((element: HTMLImageElement) => element.complete && element.naturalWidth === 1199 && getComputedStyle(element).objectFit === 'contain')).toBe(true)
   await expect(page.getByRole('heading', { name: 'Hubungi kami Placeholder' })).toBeVisible()
   await expect(page.getByText('Nomor layanan belum diisi', { exact: true })).toBeVisible()
-  await expect(page.locator('a[href^="tel:"], a[href^="mailto:"], a[href*="wa.me"]')).toHaveCount(0)
+  await expect(page.getByRole('link', { name: 'Hubungi admin SSS melalui WhatsApp' })).toHaveAttribute('href', /wa\.me/)
+  await expect(page.locator('a[href^="tel:"], a[href^="mailto:"]')).toHaveCount(0)
 })
 
 test('reduced motion keeps the poster and does not request video', async ({ page }) => {
@@ -58,7 +59,8 @@ test('glass styles have an opaque reduced-transparency fallback', async ({ page 
   const session = await page.context().newCDPSession(page)
   await session.send('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-reduced-transparency', value: 'reduce' }] })
   await page.goto('/admin')
-  expect(await page.locator('.placeholder-card').evaluate(element => getComputedStyle(element).backdropFilter)).toBe('none')
-  expect(await page.locator('.placeholder-card').evaluate(element => getComputedStyle(element).backgroundColor)).toBe('rgb(248, 252, 255)')
-  await expect(page.getByRole('heading', { name: 'Ringkasan operasional', exact: true })).toBeVisible()
+  const card=page.locator('.partner-page .card').first()
+  expect(await card.evaluate(element => getComputedStyle(element).backdropFilter)).toBe('none')
+  expect(await card.evaluate(element => getComputedStyle(element).backgroundColor)).toBe('rgb(255, 255, 255)')
+  await expect(page.getByRole('heading', { name: 'Operasi hotspot tugas saya', exact: true })).toBeVisible()
 })

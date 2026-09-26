@@ -39,12 +39,12 @@ export function Flow({title,step,children}:{title:string;step:number;children:Re
 export function Terms({pkg,partnerName}:{pkg:Package;partnerName:string}) {
   return <ul className="purchase-terms"><li>Hanya berlaku di satu lokasi: <strong>{partnerName}</strong>.</li><li>Durasi {duration(pkg.durationSeconds)} sejak login pertama berhasil; tetap berjalan saat logout.</li><li>{pkg.kind==='regular'?'Terkunci pada 1 perangkat pertama.':`Maksimal ${pkg.maxConcurrentDevices} perangkat online bersamaan, dengan waktu berakhir bersama.`}</li><li>Boleh dibeli sebelum tiba di lokasi.</li></ul>
 }
-export function Summary({catalog,pkg,price}:{catalog:Pick<Catalog,'partner'|'site'>;pkg:Package;price:number}) {
-  return <Card className="purchase-summary"><p className="eyebrow">MITRA PILIHAN ANDA</p><h2><MapPin size={21} aria-hidden="true" />{catalog.partner.name}</h2><p className="flow-ssid"><Wifi size={17} aria-hidden="true" />{catalog.site.ssid}</p><h3>{packageTitle(pkg)}</h3><p className="purchase-price">{rupiah(price)}</p><p>{pkg.speedMbps} Mbps · contoh kecepatan</p><Terms pkg={pkg} partnerName={catalog.partner.name}/><p className="assumption-note">{pkg.assumptionLabel}</p></Card>
+export function Summary({catalog,pkg,price}:{catalog:Pick<Catalog,'partner'|'site'> & {hotspot?:Catalog['hotspot']};pkg:Package;price:number}) {
+  return <Card className="purchase-summary"><p className="eyebrow">MITRA PILIHAN ANDA</p><h2><MapPin size={21} aria-hidden="true" />{catalog.partner.name}</h2><p className="flow-ssid"><Wifi size={17} aria-hidden="true" />{catalog.hotspot?.ssid??catalog.site.ssid}</p>{catalog.hotspot&&<p>Hotspot: {catalog.hotspot.name}</p>}<h3>{packageTitle(pkg)}</h3><p className="purchase-price">{rupiah(price)}</p><p>{pkg.speedMbps} Mbps · contoh kecepatan</p><Terms pkg={pkg} partnerName={catalog.partner.name}/><p className="assumption-note">{pkg.assumptionLabel}</p></Card>
 }
-export function useCatalog(id:string|undefined) {
+export function useCatalog(id:string|undefined,hotspotId?:string) {
   const [catalog,setCatalog]=useState<Catalog|null>(null),[error,setError]=useState(''),[retry,setRetry]=useState(0)
-  useEffect(()=>{let active=true;setCatalog(null);setError('');if(id)void customerService.catalog(id).then(v=>{if(active)setCatalog(v)}).catch(e=>{if(active)setError(errorMessage(e))});return()=>{active=false}},[id,retry])
+  useEffect(()=>{let active=true;setCatalog(null);setError('');if(id||hotspotId)void (hotspotId?customerService.catalogByHotspot(hotspotId):customerService.catalog(id!)).then(v=>{if(active&&(!id||v.partner.id===id))setCatalog(v);else if(active)setError('Hotspot tidak cocok dengan mitra yang dipilih.')}).catch(e=>{if(active)setError(errorMessage(e))});return()=>{active=false}},[id,hotspotId,retry])
   return {catalog,error,retry:()=>setRetry(v=>v+1)}
 }
 export function LoadState({error,retry}:{error:string;retry:()=>void}) {

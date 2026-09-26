@@ -2,9 +2,9 @@
 
 Aplikasi customer, mitra, dan owner/admin untuk pengelolaan layanan WiFi PT. Sahabat Sinyal Sejahtera. Build production menyembunyikan kontrol demo dan menahan transaksi, portal hotspot, serta notifikasi sampai provider dan infrastruktur produksi dikonfigurasi.
 
-## Menjalankan
+## Menjalankan demo lokal
 
-Prasyarat: Node.js 22 atau lebih baru.
+Prasyarat: Node.js 22.22.0 atau lebih baru (sesuai `engines` di `package.json`).
 
 ```powershell
 npm install
@@ -18,9 +18,9 @@ npm run build
 npm run preview
 ```
 
-`npm run dev` memakai fixture lokal untuk QA dan presentasi internal. Build/deploy production menggunakan `VITE_APP_MODE=production` (mode ini otomatis aktif saat `vite build`) dan tidak menampilkan banner, role switcher, kontrol skenario, atau aksi pembayaran simulasi.
+`npm run dev` memakai fixture lokal untuk QA dan presentasi MVP V2. Pemilik dapat memakai **Kontrol demo** untuk mensimulasikan pembayaran, penerbitan voucher, dan notifikasi. Customer membeli dari hotspot pilihan, memperoleh kode/QR voucher, lalu login melalui portal hotspot; token pesanan tidak mengaktifkan voucher. Admin hanya melihat hotspot yang ditugaskan owner. Build production menyembunyikan kontrol demo dan menahan alur yang masih memerlukan Mayar, WhatsApp, database bersama, atau adaptor MikroTik. Build itu belum menjadi sistem produksi yang beroperasi.
 
-Akun demo dan cara login ada di `docs/AUTH_LOCAL.md`.
+Akun staf lokal dibuat otomatis saat pertama kali server menyala. Password awal acak tersimpan di `.local/server/INITIAL_ACCOUNTS.md`; file ini privat dan tidak boleh dibagikan. Alur presentasi ada di [docs/DEMO_SCRIPT.md](docs/DEMO_SCRIPT.md) dan instruksi akun ada di [docs/AUTH_LOCAL.md](docs/AUTH_LOCAL.md).
 
 ## Verifikasi
 
@@ -29,7 +29,7 @@ npm run typecheck
 npm run build
 npm run test:domain
 npm run test:server
-npx playwright test tests/stage3.spec.ts tests/stage4.spec.ts tests/stage5.spec.ts tests/stage6.spec.ts tests/auth-hotspot.spec.ts
+npm run test:browser
 ```
 
 Bukti screenshot/JSON ada di `docs/verification/`. Hasil browser yang terhenti atau timeout harus dicatat sebagai inconclusive, bukan lulus.
@@ -38,6 +38,6 @@ Bukti screenshot/JSON ada di `docs/verification/`. Hasil browser yang terhenti a
 
 Gunakan kontrol reset demo setelah konfirmasi hanya pada development. Data yang dipakai sintetis. Pembayaran, WhatsApp, monitoring, identitas perangkat, SSID, koneksi WiFi, dan MikroTik belum terintegrasi. JSON lokal bukan database produksi, autentikasi lokal belum di-hardening, dan portal tidak menjamin akses internet/captive portal nyata.
 
-Reset: login sebagai owner, buka **Kontrol demo**, pilih reset, lalu konfirmasi. Reset hanya state sintetis; akun staf tidak dihapus. Fixture berisi 50 mitra fiktif, paket contoh, batch kode sintetis, order dan monitoring mock. Password awal ada di `.local/server/INITIAL_ACCOUNTS.md` dan tidak dimasukkan ke bundle atau dokumentasi presentasi.
+Reset: login sebagai owner, buka **Kontrol demo**, pilih reset, lalu konfirmasi. Reset hanya state sintetis; akun staf/assignment tidak dihapus. Fixture berisi 50 mitra fiktif, 51 hotspot sintetis (dua di Cisaat), paket contoh, batch voucher sintetis (kode tunggal serta satu contoh username/password), order dan telemetri demo. Password awal tidak dimasukkan ke bundle atau dokumentasi presentasi.
 
-Checklist menuju pilot ada di `docs/PRODUCTION_READINESS.md`. Build production tetap memerlukan backend/database bersama, payment provider, WhatsApp queue, dan adaptor hotspot sebelum operasi nyata. Tidak ada secret provider di bundle.
+Checklist menuju pilot ada di [docs/PRODUCTION_READINESS.md](docs/PRODUCTION_READINESS.md) dan [docs/conqueror/MVP_V2_READINESS.md](docs/conqueror/MVP_V2_READINESS.md). Aplikasi ini adalah demo lokal: tidak mengirim pesan atau pembayaran, tidak mengubah router, dan tidak memproses data pelanggan nyata. Tidak ada secret provider di bundle.

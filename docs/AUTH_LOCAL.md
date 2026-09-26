@@ -2,7 +2,7 @@
 
 Tambahan yang disetujui setelah tahap 2, 10 September 2026. Login staf menggunakan backend lokal sungguhan; voucher, SSID, perangkat, monitoring, dan koneksi internet tetap simulasi. UI dan aset yang sudah disetujui dipertahankan.
 
-> Pembaruan tahap 3: pembelian customer tanpa akun, token order acak, preview WhatsApp dan aktivasi online simulasi kini tersedia. Lihat [STAGE3_CUSTOMER.md](STAGE3_CUSTOMER.md). Pernyataan batas checkout lama di bawah digantikan oleh pembaruan ini; seluruh integrasi tetap simulasi.
+> Pembaruan MVP V2: portal kini terikat hotspot, QR voucher memakai satu kode, dan token order hanya membaca detail. Aktivasi memerlukan kredensial melalui `/api/hotspot/login`. Admin dibatasi assignment hotspot; pengelolaan katalog global dan akun ada pada owner. Lihat [MVP_V2_READINESS.md](conqueror/MVP_V2_READINESS.md).
 
 ## Menjalankan aplikasi
 
@@ -21,30 +21,30 @@ Bootstrap pertama membuat `owner`, `admin`, dan `mitra.cisaat`. Password acak ma
 
 | Peran | Halaman | Hak |
 |---|---|---|
-| Customer | `/wifi`, `/wifi/:siteId/login` | Satu kode voucher; tidak mempunyai sesi staf atau daftar stok privat |
+| Customer | `/wifi`, `/wifi/hotspot/:hotspotId/login`, alias lama `/wifi/:siteId/login`, tautan detail order acak | Login WiFi demo menerima kode tunggal/QR atau username/password untuk fixture yang sesuai; tidak mempunyai sesi staf atau daftar stok privat |
 | Mitra | `/mitra-dashboard` | Data mitra pada akunnya; tidak bisa memilih identitas mitra lain |
-| Admin | `/admin` | Operasional lintas mitra; tidak mengelola akun atau masuk area owner |
+| Admin | `/admin` | Operasi hanya pada hotspot yang ditugaskan owner; tidak mengelola akun, katalog global, atau masuk area owner |
 | Owner | `/owner`, `/owner/akun` | Seluruh akses yang tersedia, akun staf, kontrol skenario/reset |
 
 Login staf di `/login`. Peran berasal dari akun server; navigasi staf bukan role switch bebas. Halaman akun owner dapat membuat akun, mengganti password, mengaktifkan/menonaktifkan akun lain. Menonaktifkan diri sendiri atau owner aktif terakhir ditolak. Perubahan password/status membatalkan sesi lama. Identitas/peran akun yang sudah dibuat tidak dapat diedit; buat akun pengganti sesuai kebutuhan.
 
-Dashboard operasional tahap berikutnya masih placeholder. Halaman stok offline hanya daftar/copy kode untuk pengujian portal, bukan implementasi lengkap alokasi atau penjualan stok. Owner dapat melihat stok di `/owner/stok`; admin di `/admin/stok`; mitra di `/mitra-dashboard/stok`.
+Dashboard owner, admin, dan mitra sudah memiliki alur operasional demo. Stok offline bersifat sintetis; hanya owner memiliki akses ke kredensial stok contoh. Admin melihat ringkasan stok yang ditugaskan, mitra melihat ringkasan tanpa secret. Alokasi batch bukan bukti pembayaran.
 
 ## Review manual
 
-1. Login owner. Buka stok offline, pilih Mitra Cisaat, salin kode berstatus belum dipakai. Kode baru acak, berbeda dari fixture deterministik pengujian domain.
-2. Buka jendela privat sebagai customer. Pilih **Masuk WiFi** → mitra Cisaat, atau buka `/wifi/site-demo-cisaat/login`. Halaman menampilkan `SSS-DEMO-CISAAT` dari konfigurasi sintetis.
-3. Masukkan satu kode. Login yang berhasil memulai timer domain; membeli/melihat kode tidak memulai timer. Refresh/reconnect mempertahankan expiry. Coba kode Cisaat pada Cibadak: harus ditolak.
+1. Untuk alur online, mulai dari captive hotspot atau beranda, buat order customer hingga selesai. Pembayaran hanya dapat disimulasikan dari **Kontrol demo** oleh owner; halaman customer memperbarui status dan menampilkan voucher sesudah provisioning.
+2. Untuk voucher offline, buka `/wifi/hotspot/hotspot-site-demo-cisaat/login`, pilih Voucher atau Member, lalu gunakan fixture pada stok owner. Kredensial itu hanya contoh lokal.
+3. Login voucher yang berhasil memulai timer domain; membeli/melihat kode tidak memulai timer. Refresh/reconnect mempertahankan expiry. Coba voucher di hotspot lain pada lokasi sama: harus ditolak. Token detail order tidak dapat mengaktifkan voucher.
 4. Cookie perangkat mewakili satu profil browser. Profil lain dianggap perangkat berbeda; voucher reguler yang sudah terikat menolak perangkat kedua. Ini bukan pengenalan perangkat fisik.
 5. Coba URL `/owner`, `/admin`, dan `/mitra-dashboard` tanpa sesi staf: diarahkan ke login. Login mitra lalu coba owner: akses ditolak. Login admin: pengelolaan akun ditolak.
-6. Owner membuka **Akun staf**, membuat mitra untuk site lain, lalu login akun itu di profil lain. Nonaktifkan dari owner, refresh profil mitra: sesi harus tidak berlaku lagi.
+6. Owner membuka **Akun staf**, menugaskan admin ke hotspot tertentu, lalu login admin di profil lain. Hotspot lain tidak muncul pada proyeksi/search; perubahan assignment mencabut sesi lama. Buat akun mitra lain dan verifikasi tenant tetap terpisah.
 7. Coba logout staf; jika jaringan gagal, pesan kegagalan muncul dan UI tetap menunjukkan sesi. Ulangi setelah backend tersedia. Logout WiFi terpisah dari logout staf.
 8. Owner dapat membuka **Kontrol demo** untuk memajukan clock dan menguji expiry. Reset meminta konfirmasi, mengganti data sintetis/kode offline dan menghapus sesi hotspot; akun/password/sesi staf tidak ikut direset.
 9. Periksa pada lebar 360/768/1440 px dengan Tab, Shift+Tab, Enter, Escape. Pastikan form, pesan error, dialog password, menu mobile, fokus dan tabel dapat dipakai tanpa overflow halaman.
 
 ## Data, sesi, dan pemulihan
 
-- `.local/server/accounts.json`: hash scrypt dan identitas akun. `.local/server/demo-state.json`: envelope sintetis berversi/checksum. `.local/server/device-secret.json`: kunci tanda tangan cookie perangkat. `.local/server/hotspot-sessions.json`: sesi portal per perangkat mock. Semua di luar bundle, juga ditolak oleh server file Vite.
+- `.local/server/accounts.json`: hash scrypt, identitas dan assignment akun. `.local/server/demo-state.json`: envelope sintetis berversi/checksum. Migrasi V1 membuat salinan satu kali `demo-state.v1.backup.json` sebelum write V2. `.local/server/device-secret.json`: kunci tanda tangan cookie perangkat. `.local/server/hotspot-sessions.json`: sesi portal per perangkat mock. Semua di luar bundle, juga ditolak oleh server file Vite.
 - Browser membaca proyeksi API sesuai sesi. Customer tidak menerima stok, voucher lain, order, komisi, atau audit privat. Semua angka domain tetap berasal dari satu store server. localStorage tahap 2 lama tidak diimpor, ditimpa, atau dijadikan otoritas.
 - Cookie staf HttpOnly/SameSite=Strict. Sesi disimpan di memori server, idle 30 menit berdasarkan permintaan dan maksimum 8 jam, memakai waktu nyata. Polling tab aktif memperpanjang idle; clock demo tidak memperpanjang sesi staf. Restart backend mengakhiri sesi staf.
 - API memeriksa izin per operasi/objek, Origin, CSRF untuk mutasi staf, pembatasan percobaan login, serta versi akun. Cookie Secure disiapkan sebagai opsi server, tidak digunakan pada HTTP loopback ini.
@@ -54,9 +54,9 @@ Dashboard operasional tahap berikutnya masih placeholder. Halaman stok offline h
 
 ## Batas yang tetap berlaku
 
-Tidak membaca SSID/MAC browser, mengubah WiFi perangkat, memasang captive portal/router, atau membuka internet. Site dipilih manual atau dari link konfigurasi mock. Popup otomatis sesudah memilih WiFi membutuhkan konfigurasi HotSpot/router serta pengujian Android/iOS/laptop; tidak dijanjikan pada setiap reconnect.
+Tidak membaca SSID/MAC browser, mengubah WiFi perangkat, memasang captive portal/router, atau membuka internet. Hotspot dipilih manual atau dari link konfigurasi mock. Popup otomatis sesudah memilih WiFi membutuhkan konfigurasi HotSpot/router serta pengujian Android/iOS/laptop; tidak dijanjikan pada setiap reconnect.
 
-Pembayaran, provisioning, WhatsApp, monitoring, harga/rate dan data pelanggan tetap sintetis. Margin offline tidak menjadi komisi online; snapshot harga/rate dan aturan expiry/device/concurrency tahap 2 tetap dipakai. Clock domain manual tidak berjalan seperti jam internet nyata. Login kode pada `/wifi` dibatasi voucher offline; voucher online tahap 3 disambungkan dari tautan detail pesanan tanpa mengetik ulang kode.
+Pembayaran, provisioning, WhatsApp, monitoring, harga/rate dan data pelanggan tetap sintetis. Kontrol pembayaran demo ada pada owner dan recovery scoped pada admin, bukan customer capability link; tautan customer hanya membaca status. Login/putus sesi WiFi dilakukan melalui portal voucher, bukan token order. Margin offline tidak menjadi komisi online; snapshot harga/rate dan aturan expiry/device/concurrency tetap dipakai. Clock domain manual tidak berjalan seperti jam internet nyata. Tautan order customer memakai token acak, bukan pencarian berdasarkan nomor WA.
 
 Autentikasi lokal ini bukan klaim kesiapan produksi. Penggunaan jaringan memerlukan HTTPS, database/persistensi dan sesi yang sesuai, pengelolaan rahasia, audit operasional, backup, kebijakan akun/password, dan validasi integrasi router. Tidak ada reset password email, MFA, SSO, atau self-registration. Pemilik akses filesystem lokal dapat membaca rahasia/data lokal. Belum diuji di Safari/Firefox, perangkat fisik atau pembaca layar.
 

@@ -5,5 +5,13 @@ export function writeJson(path: string, data: unknown) {
   mkdirSync(dirname(path), { recursive: true })
   const temporary = `${path}.tmp`
   writeFileSync(temporary, JSON.stringify(data, null, 2), { encoding: 'utf8', mode: 0o600 })
-  renameSync(temporary, path)
+  // Windows scanners can hold the target briefly after a write; keep the atomic rename.
+  for (let attempt = 0; ; attempt++) {
+    try { renameSync(temporary, path); return }
+    catch (error) {
+      const code = (error as NodeJS.ErrnoException).code
+      if (attempt >= 4 || !['EBUSY','EPERM','EACCES'].includes(code ?? '')) throw error
+      Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 25 * (attempt + 1))
+    }
+  }
 }

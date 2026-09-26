@@ -395,6 +395,7 @@ Ditambahkan pengujian server untuk alur checkout online → paid → issued → 
 ### Verifikasi perbaikan
 
 - `npm run typecheck`: lulus.
+- `node --version`: v24.20.0; `npm ls --depth=0`: seluruh dependency tersedia.
 - `npm run test:domain`: **21/21 lulus**.
 - `npm run test:server`: **17/17 lulus**, termasuk portal bersama untuk voucher online paid/issued dan penolakan site yang salah.
 - `npm run build`: lulus.
@@ -432,3 +433,52 @@ Favicon sekarang memakai salinan apa adanya dari `logo_SSS.svg` pada `public/fav
 Runtime sekarang membedakan build production dari development. Pada production, banner/role switcher/kontrol skenario tidak dirender; checkout, detail order, dan portal hotspot menahan aksi yang masih memerlukan Mayar, WhatsApp, database bersama, atau adaptor MikroTik. Development tetap dapat memakai fixture untuk QA melalui `npm run dev`.
 
 Checklist `Validasi dan Ceklis Prototype PT SSS.docx` dibaca seluruhnya. Poin yang perlu dibawa ke backlog client: pilot Girijaya/Sizinet, ekspor CSV, paket mingguan/OLT-rumahan, aturan binding provider/hotspot, ownership akun produksi, dan akses integrasi Mayar/MikroTik/WhatsApp. Tidak ada keputusan kosong yang diubah menjadi asumsi aplikasi.
+
+## Persiapan MVP presentasi lokal — 25 September 2026
+
+### Perubahan implementasi
+
+- Aksi pembayaran, penerbitan voucher, dan status WhatsApp tidak lagi tersedia lewat capability link customer. Kontrol keberhasilan simulasi hanya bisa dijalankan melalui API staf yang tunduk pada session, CSRF, dan role authorization. Customer tetap bisa membaca status dan menjalankan aksi sambung/putus mock.
+- Portal WiFi kini menerima dua jenis fixture: kode tunggal dan username/password. Kredensial username/password disimpan sebagai tipe domain tersendiri dan validasi keunikannya dibatasi per site. Proyeksi mitra menyamarkan kode/credential; halaman mitra tidak menerima secret stok.
+- Halaman hasil order menampilkan bentuk voucher sesuai jenisnya. Owner/admin dapat meninjau fixture username/password dari stok sintetis untuk demo; teks menjelaskan bahwa data tersebut bukan kredensial pelanggan nyata.
+- Alur customer memberi cara memperbarui status order setelah owner/admin memicu simulasi di **Kontrol demo**. README, panduan login lokal, demo script, checklist acceptance, dan laporan readiness diselaraskan dengan proses ini.
+
+### Pemeriksaan yang benar-benar dijalankan
+
+- `npm run typecheck`: lulus.
+- `npm run test:domain`: 21/21 lulus.
+- `npm run test:server`: 19/19 lulus, termasuk penolakan pemalsuan hasil bayar/issue/WhatsApp via customer link, login username/password, masking partner, dan binding site.
+- `npm run build`: lulus.
+- `npm run test:browser`: 53/55 lulus pada run penuh; 2 gagal adalah assertion test glass yang sudah usang (nama aksesibel CTA dan warna kartu fallback transparansi). Setelah test diperbarui, `npx playwright test tests/glass.spec.ts --reporter=list`: 5/5 lulus. Stage 2 + stage 4 yang sempat memberi 500 saat run sebelumnya lulus 10/10 saat dijalankan terpisah; run penuh berikutnya juga lulus kedua alur tersebut. Tidak ada kegagalan alur produk di 53 browser test yang lulus; satu run penuh pasca-perbaikan assertion belum diulang.
+- Browser suite mencakup viewport 360, 390, 768, 1024, dan 1440 px, navigasi keyboard, label form, page overflow, customer/owner/admin/mitra, purchase dan reset. Bukti JSON: `docs/verification/conqueror/mvp-final-rerun/browser-results.json`; screenshot hasil penuh tersimpan di folder bukti terkait.
+- `git diff --check`: lulus.
+
+### Belum dapat atau belum dijalankan
+
+- Tidak ada schema/migration PostgreSQL, layanan database, atau test integration PostgreSQL di repository ini; pemeriksaan database bukan lulus dan tidak tersedia untuk dijalankan.
+- Tidak dilakukan audit screen reader/WCAG formal, uji Safari/Firefox/perangkat fisik, maupun tes router nyata.
+- Pembayaran/provider voucher/WhatsApp/captive portal/router tetap tidak terhubung. D1–D7 pada `docs/conqueror/MVP_READINESS.md` tetap terbuka. Tidak ada deploy atau push remote.
+
+Status yang didukung bukti: **layak untuk demo lokal dengan batasan yang dicatat; bukan siap produksi.** Laporan langkah run/reset dan script presentasi: `docs/conqueror/MVP_READINESS.md`, `docs/DEMO_SCRIPT.md`, dan `README.md`.
+
+## MVP V2 — penyelesaian presentasi lokal — 26 September 2026
+
+Gap analysis dibuat sebelum implementasi di `docs/conqueror/MVP_V2_GAP_ANALYSIS.md`. Repository aktif `main` berisi React/Vite dan Node API dengan JSON lokal berversi; pekerjaan PostgreSQL/Fastify M1.2/M1.3 berada pada worktree/branch yang divergen dan tidak digabungkan dalam batch ini. Pekerjaan MVP V1 yang belum di-commit serta catatan meeting user dipertahankan. Tidak ada deploy, push remote, integrasi pembayaran/WhatsApp/router nyata, atau data customer nyata.
+
+Provider, Site sebagai Location, dan Hotspot sekarang eksplisit (50 mitra sintetis, 51 hotspot dengan dua di Cisaat). Order dan voucher terikat pada hotspot; pool inventori online berkurang sekali ketika voucher terbit. Migrasi state lokal V1→V2 mempertahankan order, voucher dan waktu aktivasi; server membuat backup V1 satu kali sebelum penulisan V2. Portal hotspot menampilkan Voucher, Member, QR kamera dengan fallback manual, serta pembelian yang membawa konteks hotspot hingga detail order. QR hanya memuat satu kode voucher. Token detail order tidak dapat mengaktifkan sesi tanpa kredensial.
+
+Owner melihat operasi seluruh hotspot, assignment admin, health/usage sintetis, stok/alert, insiden, notifikasi dalam aplikasi, pencarian support, dan retry penerbitan yang idempoten. Admin dibatasi pada hotspot assignment di proyeksi dan API; mitra tetap hanya melihat data sendiri yang dimasking. Merchant pembayaran diberi label PT SSS, sedangkan penyelesaian pembayaran, provisioning, telemetri, SSID/perangkat dan WhatsApp masih simulasi. Semua keputusan integrasi D1–D7 tetap terbuka. Naskah presentasi 5–7 menit ada di `docs/DEMO_SCRIPT.md`; batas dan langkah reset ada di `docs/conqueror/MVP_V2_READINESS.md` serta README.
+
+### Verifikasi akhir yang benar-benar dijalankan
+
+| Pemeriksaan | Hasil |
+|---|---|
+| `npm run test:domain` | **25/25 lulus**: termasuk hotspot salah, inventori sekali, migrasi V1, idempotensi, durasi dan batas sesi |
+| `npm run test:server` | **23/23 lulus**: termasuk assignment API, operasi, kredensial, order token ditolak untuk aktivasi, recovery dan rollback disk |
+| `npm run build` | **Lulus**, termasuk `tsc --noEmit`; Vite menghasilkan bundle production |
+| `npx playwright test --reporter=list` | **64/64 lulus dalam satu run final, 15,5 menit**; customer→mitra→owner/admin, QR, fallback kamera, alur gagal, refresh/reset, masking/scope, form dan snapshot historis |
+| Viewport browser | **360/390/768/1024/1440 px lulus** pada pemeriksaan otomatis yang relevan; label input, fokus keyboard dan overflow halaman dicek |
+| `git diff --check` | Lulus; hanya peringatan konversi LF/CRLF di Windows |
+| `node .local/verify-artifacts.mjs` | Lulus; skrip tidak menemukan password awal, hash/salt akun, kode stok offline, atau marker server/fixture pada JS publik |
+
+Run browser awal gagal pada timeout screenshot halaman operasi yang terlalu panjang dan satu assertion alur sesi lama. Tampilan operasi dibatasi empat hotspot awal dengan opsi menampilkan semua 51; tes diperbaiki sesuai alur logout yang berlaku. Run kedua menemukan error penyimpanan akun Windows saat mutasi owner; penulisan file mendapat retry untuk lock sementara dan daftar akun dimuat ulang setelah respons gagal. Kasus akun lulus saat diulang, kemudian seluruh suite final lulus. Tinjauan manual dilakukan pada screenshot panel 360 px; pemeriksaan viewport lain adalah otomatis. Belum ada audit kontras formal, screen reader, Safari/Firefox, perangkat fisik, kamera nyata, maupun tes PostgreSQL pada branch aktif. **Status: READY WITH NON-BLOCKING LIMITATIONS untuk presentasi lokal; bukan siap produksi.**

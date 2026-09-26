@@ -1,0 +1,11 @@
+.operations-page h2 { margin-block: 2rem 1rem; scroll-margin-top: 1rem; }
+.operations-jump { display: flex; flex-wrap: wrap; gap: .65rem; margin-block: 1.5rem; }
+.operations-jump a { padding: .5rem .8rem; border: 1px solid var(--line, #c7d5df); border-radius: 999px; }
+.operations-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: 1rem; }
+.operations-list { display: grid; gap: .75rem; }
+.operations-page dl { display: grid; grid-template-columns: auto 1fr; gap: .3rem 1rem; }
+.operations-page dt { color: var(--text-muted, #526779); }
+.operations-page dd { margin: 0; }
+.operations-page .flow-actions { flex-wrap: wrap; }
+.operations-result { padding-block: .8rem; border-top: 1px solid rgba(100,130,150,.25); }
+@media (max-width: 600px) { .operations-page .partner-filters { grid-template-columns: 1fr; } .operations-jump { gap: .4rem; } }

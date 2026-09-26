@@ -1,5 +1,5 @@
 import {test,expect} from '@playwright/test'
-import {loginAs,resetDemo,testOrigin} from './helpers/auth'
+import {loginAs,ownerController,resetDemo,testOrigin} from './helpers/auth'
 const evidence=process.env.EVIDENCE_DIR??'docs/verification/stage4'
 test.setTimeout(90_000)
 test('customer purchase reaches only its partner, one commission, masked contact and scoped detail',async({page,browser})=>{
@@ -9,9 +9,8 @@ test('customer purchase reaches only its partner, one commission, masked contact
  try{
   await buyer.goto('/mitra/demo-cisaat/paket');await buyer.getByRole('link',{name:'Pilih Reguler · 3 jam',exact:true}).click()
   await buyer.getByLabel('Nama customer').fill('Pembelian Tahap Empat');await buyer.getByLabel('Nomor WhatsApp').fill('081234567890');await buyer.getByRole('button',{name:'Review pesanan'}).click();await buyer.getByRole('button',{name:'Buat pesanan simulasi'}).click();await expect(buyer).toHaveURL(/\/pesanan\/[a-f0-9]{64}$/)
-  await buyer.getByRole('button',{name:'Simulasikan pembayaran sukses'}).click();await expect(buyer.getByTestId('voucher-code')).toBeVisible({timeout:15000})
   const token=buyer.url().split('/').at(-1)!;const detail=await(await buyer.request.get(`/api/customer/orders/${token}`)).json()
-  await buyer.request.post(`/api/customer/orders/${token}/pay`,{headers:{origin:testOrigin},data:{status:'paid',provisioning:'issued',notification:'sent'}})
+  const controller=await ownerController(browser);await controller.call('payments','settle',[detail.order.id,'paid']);await controller.call('vouchers','issue',[detail.order.id,'issued']);await controller.call('notifications','send',[detail.order.id,'sent']);await buyer.getByRole('button',{name:'Perbarui status'}).click();await expect(buyer.getByTestId('voucher-code')).toBeVisible({timeout:15000});await controller.close()
   await page.reload();await expect(page.getByTestId('Transaksi online paid')).toHaveText(String(count+1))
   const after=await(await page.request.get('/api/state')).json();expect(after.commissions.filter((c:{orderId:string})=>c.orderId===detail.order.id)).toHaveLength(1)
   const masked=after.orders.find((o:{id:string})=>o.id===detail.order.id);expect(masked.customerWhatsapp).toBe('+628••••••7890');expect(masked.token).toBe('')

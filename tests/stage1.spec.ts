@@ -6,13 +6,13 @@ const captureDirectory = process.env.EVIDENCE_DIR ?? 'docs/verification/auth-hot
 const routes = [
   '/', '/mitra/demo-cisaat/paket', '/checkout', '/pesanan/demo-token', '/voucher/demo-token',
   '/mitra-dashboard', '/mitra-dashboard/stok', '/mitra-dashboard/penjualan', '/mitra-dashboard/penjualan/demo-order', '/mitra-dashboard/bagi-hasil', '/mitra-dashboard/pengguna',
-  '/admin', '/admin/mitra', '/admin/mitra/demo-cisaat', '/admin/paket', '/admin/stok', '/admin/transaksi', '/admin/transaksi/demo-order', '/admin/aktivitas', '/alamat-tidak-ada',
-  '/owner', '/owner/akun', '/owner/stok', '/wifi', '/wifi/site-demo-cisaat/login',
+  '/admin', '/admin/operasi', '/alamat-tidak-ada',
+  '/owner', '/owner/akun', '/owner/stok', '/owner/operasi', '/wifi', '/wifi/site-demo-cisaat/login', '/wifi/hotspot/hotspot-site-demo-cisaat-2/login',
 ]
 
 for (const width of [360, 768, 1440]) {
   test(`all routes render without page overflow at ${width}px`, async ({ page }) => {
-    test.setTimeout(90_000) // Twenty full navigations and three full-page captures per viewport.
+    test.setTimeout(150_000) // Full route sweep plus media and dashboard captures per viewport.
     await loginAs(page)
     await page.setViewportSize({ width, height: 960 })
     const errors: string[] = []
@@ -86,10 +86,10 @@ test('mobile menu, role navigation and partner context', async ({ page }) => {
   await page.getByLabel('Mitra demo', { exact: true }).selectOption('demo-cibadak')
   await expect(page.locator('.partner-context strong')).toHaveText('Mitra Cibadak')
   await page.goto('/admin')
-  await expect(page.getByRole('heading', { name: 'Ringkasan operasional', exact: true })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Operasi seluruh hotspot', exact: true })).toBeVisible()
   await page.getByRole('button', { name: 'Buka menu navigasi' }).click()
-  await page.getByRole('link', { name: 'Kelola mitra', exact: true }).click()
-  await expect(page).toHaveURL(/\/admin\/mitra$/)
+  await page.getByRole('link', { name: 'Pusat operasi', exact: true }).click()
+  await expect(page).toHaveURL(/\/admin\/operasi$/)
   await page.goto('/')
   await expect(page.getByRole('heading', { name: /Koneksi baik/ })).toBeVisible()
 })
