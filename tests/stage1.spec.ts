@@ -86,7 +86,7 @@ test('mobile menu, role navigation and partner context', async ({ page }) => {
   await page.getByLabel('Mitra demo', { exact: true }).selectOption('demo-cibadak')
   await expect(page.locator('.partner-context strong')).toHaveText('Mitra Cibadak')
   await page.goto('/admin')
-  await expect(page.getByRole('heading', { name: 'Operasi seluruh hotspot', exact: true })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Ringkasan tugas saya', exact: true })).toBeVisible()
   await page.getByRole('button', { name: 'Buka menu navigasi' }).click()
   await page.getByRole('link', { name: 'Pusat operasi', exact: true }).click()
   await expect(page).toHaveURL(/\/admin\/operasi$/)

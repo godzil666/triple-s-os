@@ -1,49 +1,65 @@
-.signal-run-dialog {
-  width: min(980px, calc(100% - 32px)); max-width: 980px; max-height: min(760px, calc(100dvh - 24px));
-  padding: 0; overflow: auto; background: #0b1b23; color: #f5fffc; border: 1px solid #51818c;
-  border-radius: 18px; box-shadow: 0 30px 100px #02151bcc; font-family: var(--font-body);
+.signal-run {
+  position: relative;
+  min-width: 0;
+  margin-bottom: 58px;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid #497582;
+  border-radius: 26px;
+  background: #0b2430;
+  color: #f5fffc;
+  box-shadow: 0 20px 48px #04161d45, inset 0 1px 0 #ffffff1b;
+  font-family: var(--font-body);
 }
-.signal-run-dialog::backdrop { background: #04151bc9; backdrop-filter: blur(8px); }
-.signal-run-topline { display: flex; align-items: center; justify-content: space-between; padding: 14px 24px; border-bottom: 1px solid #41606a; color: #b6d7d9; font-size: 11px; font-weight: 750; letter-spacing: .18em; }
-.signal-run-close { display: inline-grid; place-items: center; width: 44px; height: 44px; border: 1px solid #77949b; border-radius: 50%; background: #17323c; color: #fff; cursor: pointer; }
-.signal-run-close:hover { background: #275263; }
-.signal-run-heading { display: flex; justify-content: space-between; align-items: end; gap: 24px; padding: 25px 32px 23px; }
+.signal-run-heading {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 30px 36px 24px;
+}
 .signal-run-eyebrow { color: #a9ede1; font-size: 10px; font-weight: 800; letter-spacing: .2em; }
-.signal-run-heading h2 { font-family: var(--font-heading); font-size: clamp(35px, 5vw, 56px); line-height: 1.02; letter-spacing: -.06em; margin: 8px 0 12px; }
-.signal-run-heading h2 em { font-style: normal; color: #aaf1e3; }
-.signal-run-heading p:last-child { max-width: 480px; color: #c4d9de; font-size: 13px; line-height: 1.6; }
+.signal-run-heading h2 { margin: 7px 0 11px; font-family: var(--font-heading); font-size: clamp(36px, 5vw, 58px); line-height: 1.02; letter-spacing: -.06em; }
+.signal-run-heading h2 em { color: #aaf1e3; font-style: normal; }
+.signal-run-heading p:last-child { max-width: 600px; color: #d0e4e6; font-size: 13px; line-height: 1.6; }
 .signal-run-scoreboard { display: flex; gap: clamp(20px, 3vw, 42px); color: #afd6d9; font-size: 10px; font-weight: 800; letter-spacing: .15em; text-align: right; white-space: nowrap; }
 .signal-run-scoreboard span { display: flex; flex-direction: column; gap: 5px; }
-.signal-run-scoreboard strong { color: #f7fffc; font-size: clamp(20px, 2.2vw, 28px); letter-spacing: .03em; font-variant-numeric: tabular-nums; }
-.signal-run-stage { position: relative; margin: 0 24px; border: 1px solid #3d7780; border-radius: 12px; overflow: hidden; background: #0c1b26; }
-.signal-run-canvas { display: block; width: 100%; height: 280px; cursor: pointer; touch-action: none; }
-.signal-run-screen { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 9px; padding: 20px; background: #071822b8; text-align: center; pointer-events: none; }
+.signal-run-scoreboard strong { color: #f7fffc; font-size: clamp(22px, 2.2vw, 30px); letter-spacing: .03em; font-variant-numeric: tabular-nums; }
+.signal-run-stage { position: relative; margin: 0 24px; overflow: hidden; border: 1px solid #3d7780; border-radius: 16px; background: #0c1b26; }
+.signal-run-canvas { display: block; width: 100%; height: 280px; cursor: pointer; touch-action: manipulation; }
+.signal-run-canvas:focus-visible { outline: none; box-shadow: inset 0 0 0 3px #f6cbf0; }
+.signal-run-screen { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 9px; padding: 20px; background: #071822c9; text-align: center; pointer-events: none; }
 .signal-run-screen > * { pointer-events: auto; }
 .signal-run-phase { color: #aaf1e3; font-size: 10px; font-weight: 800; letter-spacing: .2em; }
 .signal-run-screen h3 { font-family: var(--font-heading); font-size: clamp(23px, 3vw, 34px); letter-spacing: -.04em; }
-.signal-run-screen p { color: #d5e6e8; font-size: 12px; }
-.signal-run-action { display: inline-flex; align-items: center; justify-content: center; gap: 9px; min-height: 46px; margin-top: 8px; padding: 10px 20px; border: 1px solid #baf8ee; border-radius: 8px; background: #b7f4e8; color: #0b3340; font-size: 13px; font-weight: 800; cursor: pointer; }
+.signal-run-screen p { max-width: 400px; color: #d5e6e8; font-size: 12px; }
+.signal-run-action { display: inline-flex; align-items: center; justify-content: center; gap: 9px; min-height: 46px; margin-top: 8px; padding: 10px 20px; border: 1px solid #baf8ee; border-radius: 999px; background: #b7f4e8; color: #0b3340; font-size: 13px; font-weight: 800; cursor: pointer; }
 .signal-run-action:hover { background: #e0fff8; }
-.signal-run-bottom { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 15px 32px 8px; color: #c7dbde; font-size: 12px; }
-.signal-run-key { display: inline-block; padding: 4px 7px; border: 1px solid #718e94; border-radius: 4px; color: #fff; font-size: 10px; font-weight: 800; }
-.signal-run-jump { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 9px 17px; border: 1px solid #88c9c9; border-radius: 7px; background: #163c45; color: #eafffb; font-size: 12px; font-weight: 750; cursor: pointer; }
+.signal-run-bottom { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 16px 36px 8px; color: #c7dbde; font-size: 12px; }
+.signal-run-key { display: inline-block; padding: 4px 7px; border: 1px solid #718e94; border-radius: 6px; color: #fff; font-size: 10px; font-weight: 800; }
+.signal-run-jump { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 9px 18px; border: 1px solid #88c9c9; border-radius: 999px; background: #163c45; color: #eafffb; font-size: 12px; font-weight: 750; cursor: pointer; }
+.signal-run-jump:hover:not(:disabled) { background: #20545f; }
 .signal-run-jump:disabled { opacity: .55; cursor: default; }
-.signal-run-privacy { padding: 0 32px 23px; color: #a9c6ca; font-size: 10px; }
-.signal-run-dialog .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
-.signal-run-dialog :focus-visible { outline: 3px solid #f6cbf0; outline-offset: 3px; }
+.signal-run-privacy { padding: 0 36px 23px; color: #a9c6ca; font-size: 10px; }
+.signal-run .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+.signal-run :focus-visible { outline: 3px solid #f6cbf0; outline-offset: 3px; }
+
 @media (max-width: 600px) {
-  .signal-run-dialog { width: calc(100% - 16px); max-height: calc(100dvh - 16px - env(safe-area-inset-top) - env(safe-area-inset-bottom)); border-radius: 12px; }
-  .signal-run-topline { padding: 7px 14px; }
-  .signal-run-heading { display: block; padding: 17px 18px 14px; }
+  .signal-run { margin-bottom: 42px; border-radius: 20px; }
+  .signal-run-heading { display: block; padding: 22px 18px 17px; }
   .signal-run-heading h2 { margin: 5px 0 9px; }
   .signal-run-heading p:last-child { font-size: 11px; }
-  .signal-run-scoreboard { justify-content: flex-start; text-align: left; margin-top: 13px; }
+  .signal-run-scoreboard { justify-content: flex-start; margin-top: 18px; text-align: left; }
   .signal-run-scoreboard strong { font-size: 21px; }
   .signal-run-stage { margin: 0 10px; }
-  .signal-run-canvas { height: 280px; }
   .signal-run-bottom { padding: 12px 18px 8px; font-size: 10px; }
   .signal-run-key { display: none; }
   .signal-run-jump { min-width: 87px; }
   .signal-run-privacy { padding: 0 18px 18px; line-height: 1.5; }
 }
-@media (prefers-reduced-motion: reduce) { .signal-run-dialog *, .signal-run-dialog *::before, .signal-run-dialog *::after { animation: none !important; transition: none !important; } }
+@media (prefers-reduced-motion: reduce) {
+  .signal-run *, .signal-run *::before, .signal-run *::after { animation: none !important; transition: none !important; }
+}
+@media (prefers-reduced-transparency: reduce) {
+  .signal-run-screen { background: #071822; }
+}

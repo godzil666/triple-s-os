@@ -2,9 +2,8 @@ import { createManagementService } from '../src/services/management.ts'
 import { createServer, type IncomingMessage } from 'node:http'
 import { createHash, createHmac, randomBytes, timingSafeEqual } from 'node:crypto'
 import { join } from 'node:path'
-import { copyFileSync, existsSync } from 'node:fs'
 import { createAccounts, publicUser, type AccountInput } from './accounts.ts'
-import { readJson, writeJson } from './files.ts'
+import { localJsonFiles, type JsonFiles } from './files.ts'
 import { authorizeService, projectState, partnerOrder } from './authorization.ts'
 import { createDemoStore } from '../src/domain/store.ts'
 import { createMockServices } from '../src/services/mock.ts'
@@ -15,35 +14,36 @@ import type { HotspotHealth, UsageCounts } from '../src/domain/models.ts'
 
 const token = () => randomBytes(32).toString('hex')
 const digest = (value: string) => createHash('sha256').update(value).digest('hex')
-interface Session { userId: string; version: number; csrf: string; expiresAt: number; absoluteExpiry: number }
-interface Options { directory: string; allowedOrigins: string[]; secureCookies?: boolean }
+export interface Session { userId: string; version: number; csrf: string; expiresAt: number; absoluteExpiry: number }
+export interface PreviewRuntimeState { sessions: Map<string, Session>; limits: Map<string, { count: number; expiresAt: number }> }
+interface Options { directory: string; allowedOrigins: string[]; secureCookies?: boolean; files?: JsonFiles; runtimeState?: PreviewRuntimeState }
 const safeEqual = (a: string, b: string) => a.length === b.length && timingSafeEqual(Buffer.from(a), Buffer.from(b))
 
-export function createApplication({ directory, allowedOrigins, secureCookies = false }: Options) {
-  const accounts = createAccounts(directory)
+export function createApplication({ directory, allowedOrigins, secureCookies = false, files = localJsonFiles, runtimeState }: Options) {
+  const accounts = createAccounts(directory, files)
   const statePath = join(directory, 'demo-state.json')
-  const savedState = readJson<string | null>(statePath, null)
+  const savedState = files.read<string | null>(statePath, null)
   const prepareFreshState=(state:DemoState)=>{for(const voucher of state.vouchers)if(voucher.batchId)voucher.code=`SSS-${randomBytes(10).toString('hex').toUpperCase()}`}
-  const store = createDemoStore({ getItem: () => savedState, setItem: (_key, value) => writeJson(statePath, value) }, { strictPersistence: true, prepareFreshState })
+  const store = createDemoStore({ getItem: () => savedState, setItem: (_key, value) => files.write(statePath, value) }, { strictPersistence: true, prepareFreshState })
   if (savedState !== null && store.getSnapshot().persistenceNotice) {
     throw new Error('DEMO_STATE_INVALID: data server tidak valid. Startup dihentikan; file lama dipertahankan. Pulihkan backup atau arsipkan demo-state.json secara manual sebelum membuat demo baru.')
   }
   let legacy=false
   try { legacy=JSON.parse(savedState??'null')?.version===1 } catch { /* Invalid state is already rejected above. */ }
   const backupPath=join(directory,'demo-state.v1.backup.json')
-  if(legacy&&!existsSync(backupPath)) copyFileSync(statePath,backupPath)
+  if(legacy&&!files.exists(backupPath)) files.copy(statePath,backupPath)
   if(savedState === null) store.transact(()=>{})
   if (store.getSnapshot().persistenceNotice) throw new Error('DEMO_STATE_WRITE_FAILED: data awal tidak dapat disimpan; periksa izin folder server.')
   const services = createMockServices(store, { orderToken: token })
   const customer = createCustomerService(store, services)
   const operations = createOperations(store, services, accounts)
-  const sessions = new Map<string, Session>()
-  const limits = new Map<string, { count: number; expiresAt: number }>()
+  const sessions = runtimeState?.sessions ?? new Map<string, Session>()
+  const limits = runtimeState?.limits ?? new Map<string, { count: number; expiresAt: number }>()
   const secretPath = join(directory, 'device-secret.json')
-  const secret = readJson<string | null>(secretPath, null) ?? token()
-  writeJson(secretPath, secret)
+  const secret = files.read<string | null>(secretPath, null) ?? token()
+  files.write(secretPath, secret)
   const hotspotPath = join(directory, 'hotspot-sessions.json')
-  const hotspotSessions = readJson<Record<string, { voucherId: string; sessionId: string }>>(hotspotPath, {})
+  const hotspotSessions = files.read<Record<string, { voucherId: string; sessionId: string }>>(hotspotPath, {})
   const sign = (value: string) => createHmac('sha256', secret).update(value).digest('hex')
   function throttle(key: string, maximum: number) {
     const now = Date.now()
@@ -55,7 +55,7 @@ export function createApplication({ directory, allowedOrigins, secureCookies = f
   function voucherView(v: Voucher) {
     return { id: v.id, siteId: v.siteId, hotspotId: v.hotspotId, status: v.status, kind: v.kind, credentialType: v.credential?.type ?? 'single_code', durationSeconds: v.durationSeconds, maxConcurrentDevices: v.maxConcurrentDevices, firstActivatedAt: v.firstActivatedAt, expiresAt: v.expiresAt }
   }
-  const server = createServer(async (request, response) => {
+  const handleRequest = async (request: IncomingMessage, response: import('node:http').ServerResponse) => {
     response.setHeader('Cache-Control', 'no-store')
     response.setHeader('X-Content-Type-Options', 'nosniff')
     response.setHeader('Referrer-Policy', 'no-referrer')
@@ -172,7 +172,7 @@ export function createApplication({ directory, allowedOrigins, secureCookies = f
         if (staff.role==='admin'&&service==='commissions'&&method==='list') result=(result as import('../src/domain/models.ts').CommissionEntry[]).filter(c=>store.getSnapshot().orders.some(o=>o.id===c.orderId&&staff.assignedHotspotIds.includes(o.hotspotId)))
         if(staff.role==='partner'&&service==='orders'&&method==='list')result=(result as import('../src/domain/models.ts').Order[]).map(partnerOrder)
         if(staff.role==='partner'&&service==='vouchers'&&method==='list')result=(result as Voucher[]).map(v=>({...v,code:'Kredensial disamarkan',credential:undefined}))
-        if(service === 'demo' && method === 'reset') { for(const key of Object.keys(hotspotSessions)) delete hotspotSessions[key]; writeJson(hotspotPath,hotspotSessions) }
+        if(service === 'demo' && method === 'reset') { for(const key of Object.keys(hotspotSessions)) delete hotspotSessions[key]; files.write(hotspotPath,hotspotSessions) }
         send(200, { result: result ?? null, state: projectState(store.getSnapshot(), staff) }); return
       }
       if (path === '/api/hotspot/session' && !isPost) {
@@ -208,13 +208,13 @@ export function createApplication({ directory, allowedOrigins, secureCookies = f
           const old = store.getSnapshot().sessions.find(s => s.id === previous.sessionId)
           if (old?.endedAt === null) await services.vouchers.logout(old.id)
         }
-        hotspotSessions[d] = { voucherId: v.id, sessionId: login.id }; writeJson(hotspotPath, hotspotSessions)
+        hotspotSessions[d] = { voucherId: v.id, sessionId: login.id }; files.write(hotspotPath, hotspotSessions)
         send(200, { voucher: voucherView(store.getSnapshot().vouchers.find(item => item.id === v.id)!), clockNow: store.getSnapshot().clockNow, connected:true }); return
       }
       if (path === '/api/hotspot/logout' && isPost) {
         const d = device(); const record = hotspotSessions[d]
         if (record && store.getSnapshot().sessions.some(s => s.id === record.sessionId)) await services.vouchers.logout(record.sessionId)
-        delete hotspotSessions[d]; writeJson(hotspotPath, hotspotSessions)
+        delete hotspotSessions[d]; files.write(hotspotPath, hotspotSessions)
         send(200, { ok: true }); return
       }
       send(404, { error: 'NOT_FOUND' })
@@ -224,8 +224,9 @@ export function createApplication({ directory, allowedOrigins, secureCookies = f
       if (status === 429) response.setHeader('Retry-After', '900')
       send(status, { error: status === 500 ? 'INTERNAL_ERROR' : code })
     }
-  })
-  return { server, store, services, accounts }
+  }
+  const server = createServer(handleRequest)
+  return { server, handleRequest, store, services, accounts, runtimeState: { sessions, limits } }
 }
 
 async function readBody(request: IncomingMessage): Promise<Record<string, unknown>> {

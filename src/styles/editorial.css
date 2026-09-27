@@ -20,7 +20,7 @@
   --font-display: 'Bodoni Moda Variable', Georgia, serif;
 }
 body { background: var(--color-bg); color: var(--color-text); }
-h1, h2, h3 { text-wrap: balance; font-family: 'Roboto Variable', 'Segoe UI', sans-serif; font-weight: 450; }
+h1, h2, h3 { text-wrap: balance; font-family: var(--font-heading); font-weight: 500; }
 .auth-shell, .login-surface, .dashboard-shell { position: relative; isolation: isolate; overflow: hidden; }
 .auth-shell, .login-surface { min-height: calc(100svh - 118px); }
 .video-backdrop { position: absolute; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; background: var(--editorial-ink); }
@@ -80,8 +80,9 @@ h1, h2, h3 { text-wrap: balance; font-family: 'Roboto Variable', 'Segoe UI', san
 .hero-title-group { min-width: 0; }
 .customer-hero .hero-eyebrow { margin-bottom: 34px; font-size: 11px; color: #d0e8ed; font-weight: 550; letter-spacing: .17em; }
 .customer-hero .hero-eyebrow > span { width: 8px; height: 8px; border-radius: 50%; background: var(--editorial-mint); box-shadow: none; }
-.customer-hero .hero-copy h1 { font-size: clamp(56px, 6.3vw, 98px); font-weight: 500; line-height: 1.05; letter-spacing: -.065em; }
-.customer-hero .hero-copy h1 > span { display: inline-block; color: #b5f4e8; font-weight: 450; font-style: italic; }
+.customer-hero .hero-copy h1 { font-family: 'Bodoni Moda Variable', Georgia, serif; font-size: clamp(60px, 7.1vw, 108px); font-weight: 600; line-height: 1.02; letter-spacing: -.075em; font-optical-sizing: auto; text-shadow: 0 2px 22px #07161c52; }
+.customer-hero .hero-copy h1 > span { display: inline-block; color: #b5f4e8; font-weight: 600; }
+.customer-hero .hero-copy h1 em { font-weight: 550; font-style: italic; letter-spacing: -.095em; }
 .hero-intro { padding-bottom: 3px; }
 .customer-hero .hero-description { margin: 0; max-width: 350px; color: #e1edf0; font-size: 15px; line-height: 1.85; }
 .hero-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-top: 28px; }
@@ -184,7 +185,7 @@ h1, h2, h3 { text-wrap: balance; font-family: 'Roboto Variable', 'Segoe UI', san
 @media (max-width: 1100px) {
   .page-container, .footer-inner { width: calc(100% - 64px); }
   .customer-hero .hero-copy { gap: 28px; grid-template-columns: minmax(0,1.65fr) minmax(0,1fr); }
-  .customer-hero .hero-copy h1 { font-size: clamp(48px, 6.1vw, 68px); }
+  .customer-hero .hero-copy h1 { font-size: clamp(54px, 6.5vw, 74px); }
   .customer-hero .hero-bottom { width: calc(100% - 64px); }
   .directory-layout { gap: 28px; grid-template-columns: minmax(0,1fr) 250px; }
   .partner-card { padding-inline: 20px; }
@@ -196,7 +197,7 @@ h1, h2, h3 { text-wrap: balance; font-family: 'Roboto Variable', 'Segoe UI', san
   .customer-hero { min-height: 730px; }
   .customer-hero .hero-inner { padding-block: 155px 175px; }
   .customer-hero .hero-copy { grid-template-columns: 1fr; gap: 30px; }
-  .customer-hero .hero-copy h1 { font-size: clamp(53px, 8.7vw, 76px); }
+  .customer-hero .hero-copy h1 { font-size: clamp(54px, 8.7vw, 76px); }
   .customer-hero .hero-eyebrow { margin-bottom: 24px; }
   .hero-intro { max-width: none; }
   .hero-actions { margin-top: 25px; }
@@ -228,7 +229,7 @@ h1, h2, h3 { text-wrap: balance; font-family: 'Roboto Variable', 'Segoe UI', san
   .customer-hero { min-height: 760px; }
   .customer-hero .hero-inner { padding-block: 135px 190px; }
   .customer-hero .hero-copy { gap: 28px; }
-  .customer-hero .hero-copy h1 { font-size: clamp(43px, 10.4vw, 64px); letter-spacing: -.06em; }
+  .customer-hero .hero-copy h1 { font-size: clamp(48px, 13vw, 64px); line-height: 1.06; letter-spacing: -.075em; }
   .customer-hero .hero-eyebrow { font-size: 10px; margin-bottom: 25px; }
   .customer-hero .hero-description { font-size: 14px; }
   .customer-hero .hero-cta { margin-top: 22px; font-size: 13px; }
@@ -275,4 +276,34 @@ h1, h2, h3 { text-wrap: balance; font-family: 'Roboto Variable', 'Segoe UI', san
 @media (prefers-reduced-transparency: reduce) {
   .card, .empty-state, dialog, .customer-header nav, .dashboard-header, .field input, .field select { background: #fff; }
   .sidebar, .customer-shell--home .customer-header nav, .location-guide { background: var(--editorial-ink); }
+}
+/* Keep the footer attached to the preceding surface; spacing lives inside it. */
+.site-footer, .site-footer--compact { margin-top: 0; }
+.customer-shell--immersive { background: var(--editorial-ink); }
+.customer-shell--immersive .customer-header { margin-block: 0; min-height: 104px; background: var(--editorial-ink); color: #f2fbfa; }
+.customer-shell--immersive .customer-header nav { background: #0c1b22d9; border-color: #8da8b37a; }
+.customer-shell--immersive .customer-header nav > a.active { background: var(--editorial-mint); color: #153a40; }
+.customer-shell--immersive .customer-header nav > a:hover, .customer-shell--immersive .customer-header .button:hover { background: #30505c; color: #fff; }
+.customer-shell--immersive .customer-header .brand-wordmark { color: #fff; }
+.customer-shell--immersive .customer-header .brand-os { color: var(--editorial-mint); }
+.customer-shell--immersive .customer-header .brand-subtitle { color: #d7e6f4; }
+.customer-shell--immersive .customer-header .button { color: #e1eff8; }
+.customer-header .brand img { width: 56px; height: 62px; }
+.customer-header .brand-wordmark { font-size: 32px; }
+.customer-header .brand-subtitle { font-size: 9px; }
+.site-footer .brand img { width: 68px; height: 76px; }
+.site-footer .brand-wordmark { font-size: 31px; }
+.site-footer .brand-subtitle { font-size: 9px; }
+@media (max-width: 600px) {
+  .customer-header .brand img { width: 39px; height: 45px; }
+  .customer-header .brand-wordmark { font-size: 24px; }
+  .customer-header .brand-subtitle { font-size: 7px; }
+  .site-footer .brand img { width: 55px; height: 62px; }
+  .site-footer .brand-wordmark { font-size: 26px; }
+}
+@supports not (backdrop-filter: blur(1px)) {
+  .customer-shell--immersive .customer-header nav { background: var(--editorial-ink); }
+}
+@media (prefers-reduced-transparency: reduce) {
+  .customer-shell--immersive .customer-header nav { background: var(--editorial-ink); }
 }

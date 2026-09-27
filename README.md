@@ -41,3 +41,7 @@ Gunakan kontrol reset demo setelah konfirmasi hanya pada development. Data yang 
 Reset: login sebagai owner, buka **Kontrol demo**, pilih reset, lalu konfirmasi. Reset hanya state sintetis; akun staf/assignment tidak dihapus. Fixture berisi 50 mitra fiktif, 51 hotspot sintetis (dua di Cisaat), paket contoh, batch voucher sintetis (kode tunggal serta satu contoh username/password), order dan telemetri demo. Password awal tidak dimasukkan ke bundle atau dokumentasi presentasi.
 
 Checklist menuju pilot ada di [docs/PRODUCTION_READINESS.md](docs/PRODUCTION_READINESS.md) dan [docs/conqueror/MVP_V2_READINESS.md](docs/conqueror/MVP_V2_READINESS.md). Aplikasi ini adalah demo lokal: tidak mengirim pesan atau pembayaran, tidak mengubah router, dan tidak memproses data pelanggan nyata. Tidak ada secret provider di bundle.
+
+## Client Preview (belum tersedia publik)
+
+Branch `client-preview` menyiapkan Vercel HTTPS + Node API yang sama + PostgreSQL Supabase untuk data sintetis bersama. Ini **bukan produksi**. Jangan membagikan URL sampai status [Client Preview Readiness](docs/conqueror/CLIENT_PREVIEW_READINESS.md) menyatakan seluruh pemeriksaan remote lulus. Lihat [rencana deployment](docs/conqueror/CLIENT_PREVIEW_DEPLOYMENT_PLAN.md) untuk migrasi, variabel server-side, dan urutan QA. Password akun preview serta URI database hanya boleh dimasukkan melalui UI environment variables yang aman; tidak ada di Git atau bundle Vite. Signal Run tetap client-side dan skor terbaiknya hanya di perangkat pengguna.

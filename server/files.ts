@@ -1,4 +1,4 @@
-import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs'
+import { copyFileSync, existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs'
 import { dirname } from 'node:path'
 export function readJson<T>(path: string, fallback: T): T { return existsSync(path) ? JSON.parse(readFileSync(path, 'utf8')) as T : fallback }
 export function writeJson(path: string, data: unknown) {
@@ -14,4 +14,18 @@ export function writeJson(path: string, data: unknown) {
       Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 25 * (attempt + 1))
     }
   }
+}
+
+export interface JsonFiles {
+  read<T>(path: string, fallback: T): T
+  write(path: string, data: unknown): void
+  exists(path: string): boolean
+  copy(from: string, to: string): void
+}
+
+export const localJsonFiles: JsonFiles = {
+  read: readJson,
+  write: writeJson,
+  exists: existsSync,
+  copy: (from, to) => { copyFileSync(from, to) },
 }

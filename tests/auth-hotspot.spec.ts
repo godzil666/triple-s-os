@@ -40,7 +40,7 @@ test('partner cannot switch site or open owner; admin cannot manage owner accoun
   await expect(page.getByRole('button',{name:'Kontrol demo'})).toHaveCount(0)
   const state=await(await page.request.get('/api/state')).json();expect(state.vouchers.every((v:{partnerId:string})=>v.partnerId==='demo-cisaat')).toBe(true)
   await page.goto('/owner/akun');await expect(page.getByRole('heading',{name:'Akses tidak tersedia'})).toBeVisible()
-  await loginAs(page,'admin');await page.goto('/admin');await expect(page.getByRole('heading',{name:'Operasi hotspot tugas saya'})).toBeVisible()
+  await loginAs(page,'admin');await page.goto('/admin');await expect(page.getByRole('heading',{name:'Ringkasan tugas saya'})).toBeVisible()
   await page.goto('/owner/akun');await expect(page.getByRole('heading',{name:'Akses tidak tersedia'})).toBeVisible()
   expect((await page.request.get('/api/accounts')).status()).toBe(403)
 })

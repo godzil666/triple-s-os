@@ -38,6 +38,17 @@ test('collecting a signal adds bonus score and removes it once', () => {
   assert.equal(advanceGame(picked, .02).collected, 1)
 })
 
+test('successive waves vary obstacle size without changing the endless runner controls', () => {
+  let game = { ...createGame(600), phase: 'playing', spawnIn: .01 }
+  const heights = []
+  for (let wave = 0; wave < 3; wave++) {
+    game = advanceGame({ ...game, spawnIn: .01, obstacles: [] }, .02)
+    heights.push(game.obstacles[0].height)
+    assert.equal(game.waves, wave + 1)
+  }
+  assert.deepEqual(heights, [39, 51, 31])
+})
+
 test('best score remains device local and malformed or blocked storage fails safely', () => {
   const values = new Map()
   const storage = { getItem: key => values.get(key) ?? null, setItem: (key, value) => values.set(key, value) }

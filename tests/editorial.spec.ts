@@ -1,7 +1,7 @@
 import { test, expect, type Page } from '@playwright/test'
 import { loginAs } from './helpers/auth'
 
-const evidence = 'docs/verification/editorial'
+const evidence = process.env.EVIDENCE_DIR ?? 'docs/verification/editorial'
 test.setTimeout(120_000)
 async function fits(page: Page) {
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
@@ -15,6 +15,17 @@ for (const width of [360, 390, 768, 1024, 1440]) {
     page.on('pageerror', error => errors.push(error.message))
     await page.goto('/')
     await expect(page.getByRole('heading', { name: 'Koneksi baik, mulai dari sini.' })).toBeVisible()
+    const heroType = await page.locator('#welcome-title').evaluate(async heading => {
+      await document.fonts.ready
+      const accent = heading.querySelector('em')!
+      const accentRect = accent.getBoundingClientRect()
+      return { family: getComputedStyle(heading).fontFamily, italic: getComputedStyle(accent).fontStyle, accentRight: accentRect.right, accentLeft: accentRect.left, loaded: document.fonts.check('italic 54px "Bodoni Moda Variable"') }
+    })
+    expect(heroType.family).toContain('Bodoni Moda Variable')
+    expect(heroType.italic).toBe('italic')
+    expect(heroType.loaded).toBe(true)
+    expect(heroType.accentLeft).toBeGreaterThanOrEqual(0)
+    expect(heroType.accentRight).toBeLessThanOrEqual(width + 1)
     await expect(page.getByRole('link', { name: 'Hubungi admin SSS melalui WhatsApp' })).toHaveAttribute('href', /wa\.me/)
     await fits(page)
     await page.screenshot({ path: `${evidence}/home-${width}.png`, fullPage: true })
@@ -80,10 +91,62 @@ for (const width of [390, 1440]) {
   })
 }
 
-test('local typography uses Roboto Variable on the login surface', async ({ page }) => {
+test('local typography pairs Inter body with Bricolage headings across customer and staff pages', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 900 })
-  await page.goto('/login')
-  const fonts = await page.evaluate(() => ({ body: getComputedStyle(document.body).fontFamily, heading: getComputedStyle(document.querySelector('h1')!).fontFamily }))
-  expect(fonts.body).toContain('Roboto Variable')
-  expect(fonts.heading).toContain('Roboto Variable')
+  for (const route of ['/', '/login', '/wifi']) {
+    await page.goto(route)
+    await expect(page.locator('h1')).toBeVisible()
+    const fonts = await page.evaluate(async () => {
+      await document.fonts.ready
+      const body = getComputedStyle(document.body).fontFamily
+      const heading = getComputedStyle(document.querySelector('h1')!).fontFamily
+      const wordmark = getComputedStyle(document.querySelector('.brand-wordmark')!).fontFamily
+      const control = getComputedStyle(document.querySelector('button')!).fontFamily
+      return { body, heading, wordmark, control, bodyLoaded: document.fonts.check('16px "Inter Variable"'), headingLoaded: document.fonts.check(`32px ${heading}`) }
+    })
+    expect(fonts.body).toContain('Inter Variable')
+    expect(fonts.heading).toContain(route === '/' ? 'Bodoni Moda Variable' : 'Bricolage Grotesque Variable')
+    expect(fonts.wordmark).toContain('Bodoni Moda Variable')
+    expect(fonts.control).toContain('Inter Variable')
+    expect(fonts.bodyLoaded).toBe(true)
+    expect(fonts.headingLoaded).toBe(true)
+  }
+})
+
+test('one dashboard entry, dark login navigation and attached footer', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 900 })
+  await page.goto('/')
+  const footer = page.locator('.site-footer')
+  await expect(footer.getByRole('link', { name: 'Dashboard' })).toHaveCount(1)
+  await expect(footer.getByRole('link', { name: /Portal mitra|Portal owner/ })).toHaveCount(0)
+  await footer.getByRole('link', { name: 'Dashboard' }).click()
+  await expect(page).toHaveURL(/\/login$/)
+  await expect(page.getByRole('heading', { name: 'Login staf', exact: true })).toBeVisible()
+  for (const route of ['/login', '/wifi']) {
+    await page.goto(route)
+    await expect(page.locator('.customer-shell--immersive .customer-header nav')).toBeVisible()
+    await expect(page.locator('.site-footer')).toBeVisible()
+    const colors = await page.evaluate(() => ({ shell: getComputedStyle(document.querySelector('.customer-shell')!).backgroundColor, header: getComputedStyle(document.querySelector('.customer-header')!).backgroundColor, nav: getComputedStyle(document.querySelector('.customer-header nav')!).backgroundColor, gap: document.querySelector('.site-footer')!.getBoundingClientRect().top - document.querySelector('main')!.getBoundingClientRect().bottom }))
+    expect(colors.shell).toBe('rgb(12, 27, 34)')
+    expect(colors.header).toBe(colors.shell)
+    expect(colors.nav).not.toBe('rgb(255, 255, 255)')
+    expect(Math.abs(colors.gap)).toBeLessThan(2)
+    await page.screenshot({ path: `${evidence}/${route === '/login' ? 'staff-login' : 'wifi-login'}-390.png`, fullPage: true })
+  }
+})
+
+test('admin overview links to assigned operations without owner controls', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 960 })
+  await loginAs(page, 'admin')
+  await page.goto('/admin')
+  await expect(page.getByRole('heading', { name: 'Ringkasan tugas saya' })).toBeVisible()
+  await expect(page.locator('.admin-overview-sites > div')).toHaveCount(1)
+  await expect(page.getByRole('link', { name: 'Paket internet' })).toHaveCount(0)
+  await page.screenshot({ path: `${evidence}/admin-overview-1440.png`, fullPage: true })
+  await page.getByRole('link', { name: /Alert terbuka/ }).click()
+  await expect(page).toHaveURL(/\/admin\/operasi#alerts$/)
+  await expect(page.getByRole('heading', { name: 'Operasi hotspot tugas saya' })).toBeVisible()
+  await expect(page.locator('#health ~ .operations-grid .card')).toHaveCount(1)
+  await page.goto('/owner/paket')
+  await expect(page.getByRole('heading', { name: 'Akses tidak tersedia' })).toBeVisible()
 })

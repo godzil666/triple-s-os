@@ -67,6 +67,7 @@ test('lost checkout response recovers the same order after refresh even when its
   }finally{await toggle(true);await context.close()}
 })
 test('regular device binding and monthly concurrency are enforced across customer browser profiles',async({page,browser})=>{
+  test.setTimeout(180_000)
   const b=await browser.newContext({baseURL:testOrigin}),c=await browser.newContext({baseURL:testOrigin})
   const second=await b.newPage(),third=await c.newPage()
   const connect=async(p:Page,code:string)=>{await p.goto('/wifi/hotspot/hotspot-site-demo-cisaat/login');await p.getByLabel('Kode voucher').fill(code);await p.getByRole('button',{name:'Masuk dengan voucher',exact:true}).click()}

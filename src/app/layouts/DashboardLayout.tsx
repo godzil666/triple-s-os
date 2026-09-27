@@ -28,7 +28,7 @@ const ownerItems = [
   { to: '/admin/transaksi', label: 'Transaksi', icon: ReceiptText },
   { to: '/admin/aktivitas', label: 'Log aktivitas', icon: Activity },
 ]
-const adminItems = [{ to: '/admin', label: 'Hotspot tugas saya', icon: LayoutDashboard }, { to: '/admin/operasi', label: 'Pusat operasi', icon: Activity }]
+const adminItems = [{ to: '/admin', label: 'Ringkasan tugas', icon: LayoutDashboard }, { to: '/admin/operasi', label: 'Pusat operasi', icon: Activity }]
 
 export function DashboardLayout({ role }: { role: 'Mitra' | 'Admin' | 'Owner' }) {
   const [menuOpen, setMenuOpen] = useState(false)
@@ -44,7 +44,7 @@ export function DashboardLayout({ role }: { role: 'Mitra' | 'Admin' | 'Owner' })
       <div id="dashboard-navigation" className={`sidebar-content ${menuOpen ? 'is-open' : ''}`}>
         <p className="eyebrow sidebar-label">Ruang {role.toLowerCase()}</p>
         <nav aria-label={`Navigasi ${role.toLowerCase()}`}>{items.map(({ to, label, icon: Icon }) => <NavLink key={to} to={to} end={to === '/admin' || to === '/owner' || to === '/mitra-dashboard'} onClick={() => setMenuOpen(false)}><Icon size={19} aria-hidden="true" />{label}<ChevronRight size={15} className="nav-chevron" aria-hidden="true" /></NavLink>)}</nav>
-        <div className="sidebar-note"><div className="sidebar-note-icon"><CircleHelp size={21} aria-hidden="true" /></div><strong>{isDemoMode ? 'Ruang kerja dalam demo' : 'Ruang kerja Triple S OS'}</strong><p>{isDemoMode ? (role === 'Mitra' ? 'Pantau transaksi, stok, dan sesi milik mitra. Semua data operasional masih simulasi.' : 'Kelola mitra, paket, stok dan transaksi sintetis. Perubahan tercatat di audit.') : 'Kelola data sesuai peran Anda. Integrasi provider, hotspot, dan pembayaran mengikuti konfigurasi operasional.'}</p><button className="text-button" onClick={() => setHelpOpen(true)}>{isDemoMode ? 'Lihat batas demo' : 'Lihat panduan akses'} <ArrowUpRight size={16} aria-hidden="true" /></button></div>
+        <div className="sidebar-note"><div className="sidebar-note-icon"><CircleHelp size={21} aria-hidden="true" /></div><strong>{isDemoMode ? 'Ruang kerja dalam demo' : 'Ruang kerja Triple S OS'}</strong><p>{isDemoMode ? (role === 'Mitra' ? 'Pantau transaksi, stok, dan sesi milik mitra. Semua data operasional masih simulasi.' : role === 'Admin' ? 'Pantau hotspot tugas, alert, insiden, dan pemulihan pesanan sintetis. Pengelolaan global tetap khusus owner.' : 'Kelola mitra, paket, stok dan transaksi sintetis. Perubahan tercatat di audit.') : 'Kelola data sesuai peran Anda. Integrasi provider, hotspot, dan pembayaran mengikuti konfigurasi operasional.'}</p><button className="text-button" onClick={() => setHelpOpen(true)}>{isDemoMode ? 'Lihat batas demo' : 'Lihat panduan akses'} <ArrowUpRight size={16} aria-hidden="true" /></button></div>
         <p className="sidebar-footer">Triple S OS <span>{role === 'Mitra' ? 'Dashboard · Tahap 4' : 'Pengelolaan · Tahap 5'}</span></p>
       </div>
     </aside>

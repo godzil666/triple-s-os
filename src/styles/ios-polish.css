@@ -1,0 +1,142 @@
+/* iOS-inspired web treatment: translucent controls, solid content surfaces, SSS accents. */
+:root {
+  --color-bg: #f2f6f7;
+  --color-surface: #fff;
+  --color-text: #152c33;
+  --color-muted: #50666d;
+  --color-border: #d9e5e5;
+  --color-border-strong: #8ba8ac;
+  --color-tint: #e6f4f1;
+  --color-focus: #096c78;
+  --glass-surface: #fffffff2;
+  --glass-border: #ffffff;
+  --glass-shadow: 0 12px 34px #1a596c0d, 0 2px 7px #1a596c08;
+  --radius-sm: 14px;
+  --radius-md: 22px;
+}
+
+body { background: var(--color-bg); }
+::selection { background: #a6eee2; color: #143a42; }
+
+/* Interactive controls form the floating material layer. Content stays legible and solid. */
+.button { min-height: 46px; border-radius: 999px; font-weight: 650; letter-spacing: -.01em; transition: background-color .18s ease, border-color .18s ease, box-shadow .18s ease, transform .18s ease; }
+.button:active:not(:disabled), .customer-header nav > a:active, .sidebar nav a:active { transform: scale(.98); }
+.button--primary { background: #124f5b; border-color: #124f5b; color: #fff; box-shadow: 0 5px 12px #124f5b20; }
+.button--primary:hover { background: #0b6470; border-color: #0b6470; }
+.button--secondary { background: #fff; border-color: #c6dada; color: #174c56; box-shadow: 0 2px 7px #1a596c08; }
+.button--secondary:hover { background: #eaf8f5; border-color: #8cbab7; }
+.button--ghost { border-color: transparent; }
+.field label { font-size: 13px; font-weight: 650; color: #2b4650; }
+.field input, .field select { min-height: 52px; border-radius: 14px; border-color: #b8cccf; background: #fff; color: var(--color-text); box-shadow: inset 0 1px 2px #1c4d5909; }
+.field input:hover, .field select:hover { border-color: #719ea4; }
+.field input:focus-visible, .field select:focus-visible { border-color: #096c78; box-shadow: 0 0 0 4px #a9e7de8c; outline: 2px solid #096c78; outline-offset: 2px; }
+.field [aria-invalid=true] { border-color: var(--color-error); }
+.card, .empty-state, dialog { background: #fff; border: 1px solid #e0eaea; border-radius: 22px; box-shadow: 0 12px 32px #1a596c0b, 0 1px 3px #1a596c07; backdrop-filter: none; }
+.badge { border-radius: 999px; font-weight: 650; }
+.table-scroll { border-radius: 20px; box-shadow: 0 8px 24px #1a596c09; }
+.table-scroll th { background: #f0f7f6; }
+.table-scroll tbody tr:hover { background: #f5fbf9; }
+
+/* Customer navigation keeps the existing dark hero and uses a calm capsule elsewhere. */
+.customer-header nav { background: #fffffff0; border-color: #ffffff; box-shadow: 0 8px 24px #0a3b4515, inset 0 1px 0 #fff; -webkit-backdrop-filter: blur(18px) saturate(125%); backdrop-filter: blur(18px) saturate(125%); }
+.customer-header nav > a.active { background: #d6f2eb; color: #164c56; }
+.customer-header nav > a:hover { background: #e9f7f3; }
+.customer-shell--home .customer-header nav, .customer-shell--immersive .customer-header nav { background: #0c1b22d9; border-color: #8da8b37a; box-shadow: 0 8px 24px #04161f30, inset 0 1px 0 #ffffff17; }
+.customer-shell--home .customer-header nav > a:hover, .customer-shell--immersive .customer-header nav > a:hover { background: #30505c; color: #fff; }
+
+/* The three-step path reads as one grouped control instead of a dividing rule. */
+.purchase-steps { padding: 18px 24px; margin-block: 30px 72px; border: 1px solid #deebea; border-radius: 22px; background: #ffffffed; box-shadow: 0 8px 26px #1a596c0a; gap: 18px; }
+.purchase-steps li { gap: 12px; }
+.purchase-steps .step-number, .purchase-steps li[aria-current=step] .step-number { width: 38px; height: 38px; flex: 0 0 38px; display: grid; place-items: center; border-radius: 12px; background: #eff5f4; color: #43656a; font-size: 13px; font-weight: 750; letter-spacing: 0; }
+.purchase-steps li[aria-current=step] .step-number { background: #cbf1e9; color: #15575f; }
+.purchase-steps strong { font-size: 13px; }
+.purchase-steps div > span { font-size: 11px; }
+.purchase-steps li > svg { color: #8eaaaa; }
+
+/* Location picker: roomy list cards, grouped search, high contrast guidance. */
+.directory-heading { margin-bottom: 30px; }
+.directory-heading h2 { font-size: clamp(36px, 3.5vw, 55px); }
+.directory-heading > .badge { background: #fff; border: 1px solid #d1e3e1; padding: 8px 13px; }
+.directory-layout { gap: 32px; }
+.search-toolbar { padding: 16px; border: 1px solid #e0eaea; border-radius: 22px; background: #fffffff2; box-shadow: 0 8px 25px #1a596c09; gap: 14px; align-items: end; }
+.search-toolbar .field label { margin-bottom: 8px; }
+.search-toolbar .field input, .search-toolbar .field select { background: #f8fbfb; border-color: #d0e0df; }
+.search-toolbar .field input:focus-visible, .search-toolbar .field select:focus-visible { background: #fff; }
+.results-summary { margin-block: 22px 18px; font-size: 12px; }
+.results-summary > span { font-size: 12px; }
+.partner-grid { gap: 16px; }
+.partner-card { display: flex; flex-direction: column; min-height: 266px; padding: 23px 24px 0; border: 1px solid #e1ebea; border-radius: 22px; background: #fff; box-shadow: 0 8px 25px #1a596c0a; transition: border-color .2s ease, box-shadow .2s ease, transform .2s ease; }
+.partner-card:hover { transform: translateY(-2px); border-color: #95c9c3; background: #fff; box-shadow: 0 18px 34px #1a596c18; }
+.partner-card-top { margin-bottom: 21px; }
+.partner-index { display: grid; place-items: center; width: 42px; height: 42px; border-radius: 13px; background: #e2f5ef; color: #1c6269; font-size: 17px; font-weight: 700; letter-spacing: -.03em; }
+.partner-area { font-size: 12px; }
+.partner-card h3 { font-size: 23px; }
+.partner-note { font-size: 12px; }
+.ssid-line { margin: 16px 0 18px; font-size: 12px; letter-spacing: 0; }
+.partner-card-bottom { margin-top: auto; min-height: 62px; border-color: #e3eded; }
+.partner-card-bottom > span { font-size: 11px; }
+.partner-card-bottom a { font-size: 12px; }
+.partner-card-bottom a > svg { padding: 8px; border: 0; background: #e5f4f0; color: #195b64; }
+.partner-card:focus-within { border-color: #3f9d9e; box-shadow: 0 0 0 3px #b7eee3, 0 12px 28px #1a596c11; }
+.location-guide { position: sticky; top: 24px; padding: 27px 25px; border: 1px solid #cae5df; border-radius: 22px; background: #e8f7f2; color: #183c43; box-shadow: 0 8px 25px #1a596c0a; }
+.location-guide .guide-icon { background: #fff; border: 1px solid #d4e9e4; color: #1b6670; }
+.location-guide h3 { color: #174c55; font-size: 26px; }
+.location-guide > p, .guide-point { color: #345b62; }
+.guide-rule { background: #bfddd7; }
+.manual-note { padding-inline: 8px; }
+
+/* Checkout, WiFi portal, login and workspace share one surface language. */
+.purchase-flow .card, .auth-card, .hotspot-card, .partner-context, .partner-metrics .card, .owner-page .card, .accounts-page .card { border: 1px solid #e0eaea; border-radius: 22px; background: #fff; box-shadow: 0 10px 30px #1a596c0b; }
+.purchase-summary { background: #eff8f5; }
+.package-option { border-top: 0; }
+.package-option:hover { border-color: #86beb7; box-shadow: 0 16px 32px #1a596c13; }
+.auth-card, .hotspot-card { border-top: 1px solid #e0eaea; }
+.hotspot-demo-note, .transaction-controls { border-radius: 18px; }
+.hotspot-offer { border-radius: 16px; background: #fff; box-shadow: 0 3px 12px #1a596c09; }
+.hotspot-offer:hover { border-color: #82b8b6; }
+
+.dashboard-shell > .sidebar { background: #f9fcfbed; color: #224149; border-right: 1px solid #dce9e7; box-shadow: 1px 0 12px #0c4e5908; -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px); }
+.sidebar .brand-wordmark { color: #163b44; }
+.sidebar .brand-subtitle, .sidebar .brand-os { color: #45727a; }
+.sidebar .eyebrow { color: #59787d; }
+.sidebar nav a { color: #395a62; border-radius: 14px; }
+.sidebar nav a.active { color: #164e57; background: #d5f2e9; }
+.sidebar nav a:hover { color: #164e57; background: #eaf7f3; }
+.sidebar .sidebar-note { background: #e8f5f2; border: 1px solid #d5eae5; border-radius: 18px; }
+.sidebar-note p, .sidebar-footer { color: #46666b; }
+.sidebar-note-icon, .sidebar-note .text-button { color: #185b65; }
+.sidebar :focus-visible { outline-color: #096c78; }
+.sidebar .mobile-menu-button { color: #164e57; }
+.dashboard-shell > .dashboard-body { background: #f2f7f5ed; }
+.dashboard-header { background: #ffffffdc; border-bottom: 1px solid #dce9e7; -webkit-backdrop-filter: blur(18px); backdrop-filter: blur(18px); }
+.dashboard-header p { font-size: 15px; }
+.partner-context { background: #fff; }
+
+@media (max-width: 850px) {
+  .purchase-steps { margin-bottom: 56px; }
+  .directory-layout { gap: 24px; }
+  .location-guide { position: static; }
+}
+@media (max-width: 600px) {
+  .purchase-steps { padding: 15px; gap: 8px; margin-block: 22px 48px; border-radius: 18px; }
+  .purchase-steps li { gap: 8px; }
+  .purchase-steps .step-number, .purchase-steps li[aria-current=step] .step-number { width: 32px; height: 32px; flex-basis: 32px; font-size: 11px; border-radius: 10px; }
+  .purchase-steps strong { font-size: 11px; }
+  .purchase-steps div > span { font-size: 10px; }
+  .purchase-steps li > svg { display: none; }
+  .search-toolbar { padding: 14px; border-radius: 18px; }
+  .results-summary { align-items: flex-start; }
+  .results-summary > span { margin-left: 0; flex-basis: 100%; }
+  .partner-card { min-height: 250px; padding-inline: 20px; border-radius: 20px; }
+  .location-guide { border-radius: 20px; }
+  .dashboard-shell > .sidebar { background: #f9fcfbf5; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .button, .partner-card { transition: none; }
+  .partner-card:hover { transform: none; }
+  .button:active:not(:disabled), .customer-header nav > a:active, .sidebar nav a:active { transform: none; }
+}
+@media (prefers-reduced-transparency: reduce) {
+  .customer-header nav, .dashboard-shell > .sidebar, .dashboard-header { background: #fff; -webkit-backdrop-filter: none; backdrop-filter: none; }
+  .customer-shell--home .customer-header nav, .customer-shell--immersive .customer-header nav { background: #0c1b22; }
+}

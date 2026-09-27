@@ -67,7 +67,9 @@ function advanceStep(game: GameState, dt: number): GameState {
   const obstacles = game.obstacles.map(item => ({ ...item, x: item.x - speed * dt })).filter(item => item.x + item.width > -5)
   const signals = game.signals.map(item => ({ ...item, x: item.x - speed * dt })).filter(item => item.x > -20)
   if (spawnIn <= 0) {
-    obstacles.push({ x: game.width + 20, width: 34, height: 39 })
+    // Alternating obstacle profiles keep the endless run readable but less repetitive.
+    const profiles = [{ width: 34, height: 39 }, { width: 24, height: 51 }, { width: 45, height: 31 }]
+    obstacles.push({ x: game.width + 20, ...profiles[waves % profiles.length] })
     signals.push({ x: game.width + 140, y: GROUND_Y - 95 })
     waves += 1
     spawnIn += Math.max(1.15, 1.85 - elapsed * .02)

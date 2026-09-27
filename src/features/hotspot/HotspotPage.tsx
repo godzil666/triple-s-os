@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router'
-import { Ticket, Wifi } from 'lucide-react'
+import { ArrowDownRight, Ticket, Wifi } from 'lucide-react'
 import { useDemoContext } from '../../demo/DemoContext'
 import { apiRequest } from '../../services/http'
 import { Card } from '../../components/Card'
@@ -12,6 +12,7 @@ import type { Voucher } from '../../domain/models'
 import './hotspot.css'
 import { isProduction } from '../../config/runtime'
 import { QrScanner } from './QrScanner'
+import { duration, packageTitle, rupiah, startNewPurchase, useCatalog } from '../customer/purchase-shared'
 type VoucherView = Pick<Voucher,'id'|'siteId'|'hotspotId'|'status'|'kind'|'durationSeconds'|'maxConcurrentDevices'|'firstActivatedAt'|'expiresAt'>
 interface HotspotSession { voucher: (VoucherView & {credentialType:'single_code'|'username_password'}) | null; clockNow: string; connected: boolean }
 const date = (value: string) => new Intl.DateTimeFormat('id-ID',{dateStyle:'medium',timeStyle:'short',timeZone:'Asia/Jakarta'}).format(new Date(value))
@@ -37,6 +38,7 @@ function DemoHotspotPage() {
   const [chosen,setChosen]=useState(''); const [credentialType,setCredentialType]=useState<'single_code'|'username_password'>('single_code'); const [code,setCode]=useState(''); const [username,setUsername]=useState(''); const [password,setPassword]=useState(''); const [busy,setBusy]=useState(false); const [message,setMessage]=useState('')
   const [session,setSession]=useState<HotspotSession | null>(null)
   const hotspot=state.hotspots.find(h=>h.id===(hotspotId??state.hotspots.find(item=>item.siteId===siteId)?.id)); const site=state.sites.find(s=>s.id===hotspot?.siteId); const partner=state.partners.find(p=>p.id===site?.partnerId); const provider=state.providers.find(p=>p.id===site?.providerId)
+  const {catalog,error:catalogError,retry:retryCatalog}=useCatalog(partner?.id,hotspot?.id)
   useEffect(()=>{
     let active=true
     const refresh=async()=>{try{const result=await apiRequest<HotspotSession>('/api/hotspot/session');if(active)setSession(result.voucher?.hotspotId===hotspot?.id?result:null)}catch{if(active)setMessage('Layanan lokal belum tersedia. Coba lagi setelah backend berjalan.')}}
@@ -49,6 +51,7 @@ function DemoHotspotPage() {
   return <div className="login-surface"><VideoBackdrop /><div className="hotspot-page page-container"><div className="hotspot-heading"><p className="eyebrow">VOUCHER ONLINE & OFFLINE</p><h1>Masuk WiFi<br />dengan voucher Anda.</h1><p>Beli online atau di mitra, gunakan kode voucher Anda di sini.</p></div><Card className="hotspot-card">
     {!siteId&&!hotspotId ? <><div className="hotspot-symbol"><Wifi size={28} aria-hidden="true" /></div><h2>Pilih hotspot WiFi</h2><p>Cocokkan mitra dan hotspot dengan voucher atau jaringan yang dipilih di pengaturan WiFi Anda.</p><Select label="Mitra, provider, dan hotspot tujuan" value={chosen} onChange={e=>setChosen(e.target.value)}><option value="">Pilih hotspot secara manual</option>{state.hotspots.map(h=>{const location=state.sites.find(s=>s.id===h.siteId);return <option key={h.id} value={h.id}>{state.partners.find(p=>p.id===location?.partnerId)?.name} · {h.name} · {h.ssid}</option>})}</Select><Button disabled={!chosen} onClick={()=>navigate(`/wifi/hotspot/${chosen}/login`)}>Lanjut ke login voucher</Button></> : !site||!hotspot ? <><h2>Hotspot belum ditemukan</h2><p>Alamat ini tidak menunjuk ke hotspot WiFi demo yang tersedia.</p><Link className="button button--primary" to="/wifi">Pilih hotspot WiFi</Link></> : <>
       <div className="hotspot-site"><span className="hotspot-symbol"><Wifi size={25} aria-hidden="true" /></span><div><p>{partner?.name} · {provider?.name}</p><h2>{hotspot.name}</h2><span>{hotspot.ssid} · SSID tujuan · konteks simulasi</span></div></div>
+      <a className="hotspot-package-jump" href="#hotspot-offers-title">Lihat paket &amp; beli <ArrowDownRight size={17} aria-hidden="true" /></a>
       {message&&<p className="hotspot-message" role="alert">{message}</p>}
       {voucher&&<div className="hotspot-status" role="status"><strong>{voucher.status==='expired'?'Voucher kedaluwarsa':session?.connected?'Sesi simulasi aktif':'Sesi tidak tersambung'}</strong><dl><div><dt>Mulai pertama</dt><dd>{voucher.firstActivatedAt?`${date(voucher.firstActivatedAt)} WIB`:'Belum dimulai'}</dd></div><div><dt>Berakhir</dt><dd>{voucher.expiresAt?`${date(voucher.expiresAt)} WIB`:'Belum dimulai'}</dd></div><div><dt>Sisa waktu demo</dt><dd>{remaining===null?'Belum dimulai':`${remaining} menit`}</dd></div><div><dt>Batas perangkat</dt><dd>{voucher.maxConcurrentDevices}</dd></div></dl><p>Waktu memakai clock demo manual. Membuka ulang halaman tidak memperpanjang masa berlaku.</p></div>}
       {!session?.connected&&<form onSubmit={async e=>{e.preventDefault();setBusy(true);setMessage('');try{setSession(await apiRequest<HotspotSession>('/api/hotspot/login',{siteId:site.id,hotspotId:hotspot.id,...(credentialType==='single_code'?{code}:{username,password})}));setCode('');setUsername('');setPassword('')}catch(err){setMessage(errors[(err as Error).message]??'Login belum berhasil. Periksa layanan lokal dan coba lagi.')}finally{setBusy(false)}}}>
@@ -56,7 +59,12 @@ function DemoHotspotPage() {
         {credentialType==='single_code'?<><Input label="Kode voucher" placeholder="Masukkan kode voucher Anda" value={code} onChange={e=>setCode(e.target.value)} autoComplete="off" autoCapitalize="characters" spellCheck={false} maxLength={160} required leading={<Ticket size={19} />} hint="Kode dari pembelian online atau mitra. Durasi dimulai setelah login pertama berhasil." /><QrScanner onCode={setCode}/></>:<><Input label="Username member" autoComplete="username" value={username} onChange={e=>setUsername(e.target.value)} maxLength={120} required hint="Gunakan username persis seperti yang diberikan mitra."/><Input label="Password member" type="password" autoComplete="current-password" value={password} onChange={e=>setPassword(e.target.value)} maxLength={160} required hint="Password hanya dikirim ke simulator lokal."/></>}
         <Button type="submit" loading={busy}>Masuk dengan voucher</Button></form>}
       {session?.connected&&<Button variant="secondary" loading={busy} onClick={async()=>{setBusy(true);try{await apiRequest('/api/hotspot/logout',{});setSession(null);setMessage('Sesi dihentikan. Masa berlaku voucher tetap berjalan pada clock demo.')}catch{setMessage('Logout belum berhasil. Coba lagi.')}finally{setBusy(false)}}}>Keluar dari sesi WiFi</Button>}
-      <div className="flow-actions"><Link className="button button--secondary" to={`/mitra/${encodeURIComponent(partner!.id)}/paket?hotspot=${encodeURIComponent(hotspot.id)}`}>Beli voucher untuk hotspot ini</Link><Link className="hotspot-back" to="/wifi">Pilih hotspot lain</Link></div>
+      <section className="hotspot-offers" aria-labelledby="hotspot-offers-title">
+        <p className="eyebrow">BELI VOUCHER DI SINI</p><h3 id="hotspot-offers-title">Paket tersedia untuk hotspot ini</h3>
+        <p>Pilih paket untuk <strong>{hotspot.name}</strong>. Harga contoh demo; durasi baru dimulai saat login pertama berhasil.</p>
+        {!catalog?<div role={catalogError?'alert':'status'} className="hotspot-offers-feedback"><p>{catalogError||'Memuat paket yang tersedia…'}</p>{catalogError&&<Button variant="secondary" onClick={retryCatalog}>Coba lagi</Button>}</div>:catalog.offers.length?<ul className="hotspot-offer-list" aria-label="Paket voucher di hotspot ini">{catalog.offers.map(offer=><li className="hotspot-offer" key={offer.package.id}><div className="hotspot-offer-copy"><strong>{packageTitle(offer.package)}</strong><span>{duration(offer.package.durationSeconds)} sejak login pertama · {offer.package.kind==='regular'?'1 perangkat':`${offer.package.maxConcurrentDevices} perangkat bersamaan`}</span></div><div className="hotspot-offer-price"><strong>{rupiah(offer.priceRp)}</strong><span>Harga contoh</span></div><Link onClick={startNewPurchase} className="button button--primary" aria-label={`Beli ${offer.package.name}`} to={`/checkout?mitra=${encodeURIComponent(catalog.partner.id)}&paket=${encodeURIComponent(offer.package.id)}&hotspot=${encodeURIComponent(catalog.hotspot.id)}`}>Beli</Link></li>)}</ul>:<p className="hotspot-offers-feedback" role="status">Belum ada paket untuk pembelian baru di hotspot ini. Voucher yang sudah dimiliki tetap dapat dipakai sesuai masa berlakunya.</p>}
+        <div className="flow-actions"><Link className="button button--secondary" to={`/mitra/${encodeURIComponent(partner!.id)}/paket?hotspot=${encodeURIComponent(hotspot.id)}`}>Lihat detail semua paket</Link><Link className="hotspot-back" to="/wifi">Pilih hotspot lain</Link></div>
+      </section>
     </>}
     <div className="hotspot-demo-note"><strong>Portal WiFi simulasi</strong><p>Aplikasi tidak membaca SSID/MAC, mengganti jaringan, atau membuka akses internet perangkat. Pilih WiFi melalui pengaturan perangkat. Popup otomatis memerlukan integrasi captive portal router yang belum dilakukan.</p></div>
   </Card></div></div>

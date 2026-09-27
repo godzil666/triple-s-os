@@ -9,15 +9,18 @@ import { isDemoMode } from '../../config/runtime'
 
 export function CustomerLayout() {
   const [helpOpen, setHelpOpen] = useState(false)
-  const isHome = useLocation().pathname === '/'
-  return <div className={`customer-shell ${isHome ? 'customer-shell--home' : ''}`}>
+  const path = useLocation().pathname
+  const isHome = path === '/'
+  const isImmersive = path === '/login' || path === '/wifi' || path.startsWith('/wifi/')
+  const showSignalRun = isHome || path === '/wifi' || /^\/wifi\/(?:[^/]+|hotspot\/[^/]+)\/login\/?$/.test(path)
+  return <div className={`customer-shell ${isHome ? 'customer-shell--home' : ''} ${isImmersive ? 'customer-shell--immersive' : ''}`}>
     <header className="customer-header page-container"><Brand /><nav aria-label="Navigasi customer">
       <NavLink to="/" end>Temukan mitra</NavLink>
       <NavLink className="voucher-entry" to="/wifi">Masuk WiFi</NavLink>
       <Button variant="ghost" aria-label="Panduan" onClick={() => setHelpOpen(true)}><CircleHelp size={17} aria-hidden="true" /><span>Panduan</span></Button>
     </nav></header>
     <main id="main-content" tabIndex={-1}><Outlet /></main>
-    <SiteFooter onHelp={() => setHelpOpen(true)} />
+    <SiteFooter showSignalRun={showSignalRun} onHelp={() => setHelpOpen(true)} />
     <Dialog open={helpOpen} onClose={() => setHelpOpen(false)} title="Kenali mitra, lalu pilih paket">
       <p>Pilih nama mitra secara manual. Nama area dan SSID contoh membantu Anda mengenali lokasi; aplikasi tidak mendeteksi jaringan perangkat.</p>
       <ol className="help-steps"><li><strong>Pilih mitra.</strong> Voucher hanya berlaku pada mitra yang Anda pilih.</li><li><strong>Pilih paket dan bayar.</strong> {isDemoMode ? 'Pembayaran memakai simulasi QRIS/e-wallet.' : 'Pembayaran online akan tersedia setelah provider PT. SSS dikonfigurasi.'} Anda dapat membeli sebelum tiba di lokasi.</li><li><strong>Gunakan di WiFi mitra.</strong> Durasi baru dimulai sejak login pertama berhasil dan terus berjalan saat logout.</li></ol>

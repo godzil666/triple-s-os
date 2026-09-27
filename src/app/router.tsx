@@ -15,6 +15,7 @@ import { CheckoutPage } from '../features/customer/CheckoutPage'
 import { OrderPage } from '../features/customer/OrderPage'
 import { PartnerPages } from '../features/partner/PartnerPages'
 import { OperationsPage } from '../features/operations/OperationsPage'
+import { AdminOverviewPage } from '../features/operations/AdminOverviewPage'
 
 const ownerPages = [
  {path:'mitra',view:'partners'}, {path:'mitra/:id',view:'partner'}, {path:'paket',view:'packages'}, {path:'stok',view:'stock'}, {path:'transaksi',view:'transactions'}, {path:'transaksi/:id',view:'transaction'}, {path:'aktivitas',view:'audit'},
@@ -42,7 +43,7 @@ export function AppRoutes() {
       <Route path="pengguna" element={<PartnerPages key="sessions" view="sessions"/>}/>
     </Route></Route>
     <Route element={<RequireRole roles={['admin','owner']} />}><Route path="admin" element={<AdminLayout />}>
-      <Route index element={<OperationsPage />} />
+      <Route index element={<AdminOverviewPage />} />
       <Route path="operasi" element={<OperationsPage />} />
     </Route></Route>
     <Route element={<RequireRole roles={['owner']} />}><Route path="owner" element={<OwnerLayout />}>

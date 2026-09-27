@@ -1,0 +1,20 @@
+.site-footer--with-signal-run .footer-inner {
+  width: min(1500px, calc(100% - 64px));
+}
+
+.site-footer .signal-run-loading {
+  display: grid;
+  place-items: center;
+  min-height: 390px;
+  margin-bottom: 58px;
+  border: 1px solid #416b75;
+  border-radius: 24px;
+  background: #0b2430;
+  color: #d3efec;
+}
+
+@media (max-width: 600px) {
+  .site-footer--with-signal-run .footer-inner {
+    width: calc(100% - 32px);
+  }
+}

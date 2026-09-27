@@ -1,0 +1,25 @@
+# PT. SSS Client Preview deployment plan
+
+Status: **prepared locally; external configuration and remote verification pending**. Scope is a synthetic client preview, not production. The frozen MVP V2 commit `8da9928` stays in history; current UI changes are preserved on the `client-preview` branch. M1.2/M1.3 PostgreSQL/Fastify work is not merged.
+
+| Concern | Classification | Current finding and action |
+|---|---|---|
+| Frontend | READY | React/Vite client, same-origin `/api` calls, direct customer and dashboard routes. Set `VITE_APP_MODE=client-preview` for the preview build so simulation controls stay labeled. |
+| Node API | NEEDS_CHANGE | Existing `server/application.ts` remains the request handler; `api/index.ts` adapts it to Vercel Functions. Verify the rewrite and direct SPA routing over actual HTTPS. |
+| Domain persistence | NEEDS_CHANGE | Versioned V2 aggregate currently uses `.local/server/demo-state.json`. Preview stores the validated aggregate in a private PostgreSQL JSONB row, locked with `SELECT ... FOR UPDATE` for every API request. No browser database access. Local development retains JSON. |
+| Accounts and sessions | NEEDS_CHANGE | Local accounts, hotspot sessions and device signing secret are JSON; staff sessions and throttle counters are process memory. Preview documents contain all of these under the same transaction. Seed only configured synthetic accounts; passwords remain server-side and never enter Git or client JS. |
+| Concurrency | NEEDS_CHANGE | The single row transaction serializes checkout, simulated payment, voucher allocation, assignment, incident transitions and reset across instances. This favors correctness over throughput for a small client preview. Test against the actual database before sharing. |
+| Filesystem | READY after adapter verification | Vercel request handling uses an in-memory `JsonFiles` adapter committed to PostgreSQL before responding. No deployed request may write `.local/` or rely on process memory as authority. |
+| Database schema | READY | Versioned `supabase/migrations/20260927203620_client_preview_documents.sql` migration was applied to `SSS_OS`; seed row and SQL write verified, with no `anon` or `authenticated` read privilege. Application transactions remain untested until a secure connection is configured. This intentionally preserves the existing V2 aggregate instead of prematurely normalizing unresolved production data models. |
+| Supabase connection | EXTERNAL_ACTION_REQUIRED | Configure `SSS_PREVIEW_DATABASE_URL` in Vercel's secure environment UI using the project transaction-pooler URI. The Node function uses `pg` with a single client connection and parameterized SQL. Never set this variable with a `VITE_` prefix. |
+| Preview bootstrap | EXTERNAL_ACTION_REQUIRED | Configure `SSS_PREVIEW_BOOTSTRAP_ACCOUNTS` as secret JSON containing only intentionally shared synthetic owner/admin/partner accounts. One active owner is required. Admin assignment and partner ID must refer to fixtures. Rotate after the presentation. |
+| Vercel | EXTERNAL_ACTION_REQUIRED | Create/connect a project for private GitHub repo `godzil666/triple-s-os`, using non-production branch `client-preview`, root repository, Vite, Node >=22, `npm run build`, output `dist`. Configure `APP_ENV=client-preview`, `VITE_APP_MODE=client-preview`, and server secrets. Validate same-origin API and direct navigation. |
+| GitHub | READY after QA and secret scan | Existing remote is private and authenticated. Push only the reviewed deployment-candidate branch after local QA, artifact scan and commit. Do not push `main` or include `.local`, environment files or runtime artifacts. |
+| Security | NEEDS_CHANGE | Existing API has HttpOnly, SameSite, CSRF, origin checks and role/assignment guards. Preview enables Secure cookies and persists revocation/throttling. Confirm Vercel forwarded client IP behavior, response headers, rate-limit abuse and all remote scope tests before sharing. |
+| External providers | DEFERRED | Mayar, MikroTik/RADIUS, WhatsApp, telemetry, production stock and customer data stay unconnected. D1–D7 remain open. |
+
+The preview database is a transactional document model rather than the future normalized production schema. It is sufficient only if remote concurrency, shared state, restart and reset tests pass. Production persistence and identity design remain separate decisions.
+
+Required secure Vercel variables: `APP_ENV`, `VITE_APP_MODE`, `SSS_PREVIEW_DATABASE_URL`, `SSS_PREVIEW_BOOTSTRAP_ACCOUNTS`; optional `SSS_PUBLIC_ORIGIN` if the shared preview URL differs from `VERCEL_URL`. The database URI and account passwords must be entered in the provider UI, never pasted into chat or committed. The exact preview origin must be HTTPS.
+
+Release sequence: local regression and secret scan; candidate commit; apply migration; configure secure variables; push private branch; create Vercel preview; verify API, browser paths, multi-context state and reset; record HTTPS evidence. If any gate fails, keep the URL private and mark readiness **NOT READY**.

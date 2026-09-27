@@ -1,19 +1,19 @@
 import { randomBytes, randomUUID, scryptSync, timingSafeEqual } from 'node:crypto'
 import { join } from 'node:path'
 import type { StaffRole, StaffUser } from '../src/auth/types.ts'
-import { readJson, writeJson } from './files.ts'
+import { localJsonFiles, type JsonFiles } from './files.ts'
 
 interface Account extends StaffUser { salt: string; passwordHash: string; version: number }
 export interface AccountInput { username: string; password: string; role: StaffRole; partnerId?: string | null; assignedHotspotIds?: string[] }
 const hash = (password: string, salt: string) => scryptSync(password, salt, 64, { N: 32768, r: 8, p: 3, maxmem: 64 * 1024 * 1024 }).toString('hex')
 export const publicUser = ({ id, username, role, partnerId, assignedHotspotIds, active }: StaffUser): StaffUser => ({ id, username, role, partnerId, assignedHotspotIds: assignedHotspotIds ?? [], active })
-export function createAccounts(directory: string) {
+export function createAccounts(directory: string, files: JsonFiles = localJsonFiles) {
   const path = join(directory, 'accounts.json')
   // Existing local admin accounts had global visibility; migrate them to one explicit synthetic hotspot.
-  let accounts = readJson<Account[]>(path, []).map(account => ({ ...account, assignedHotspotIds: account.assignedHotspotIds ?? (account.role === 'admin' ? ['hotspot-site-demo-cisaat'] : []) }))
+  let accounts = files.read<Account[]>(path, []).map(account => ({ ...account, assignedHotspotIds: account.assignedHotspotIds ?? (account.role === 'admin' ? ['hotspot-site-demo-cisaat'] : []) }))
   const dummySalt = randomBytes(16).toString('hex')
   const dummyHash = hash(randomBytes(24).toString('hex'), dummySalt)
-  function persist(next: Account[]) { writeJson(path, next); accounts = next }
+  function persist(next: Account[]) { files.write(path, next); accounts = next }
   function checkPassword(password: unknown): asserts password is string {
     if (typeof password !== 'string' || password.length < 12 || password.length > 128) throw new Error('PASSWORD_LENGTH')
   }

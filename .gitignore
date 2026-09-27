@@ -8,4 +8,5 @@ dist/
 test-results/
 playwright-report/
 .local/
+supabase/.temp/
 docs/verification/conqueror/

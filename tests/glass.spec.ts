@@ -62,5 +62,5 @@ test('glass styles have an opaque reduced-transparency fallback', async ({ page 
   const card=page.locator('.partner-page .card').first()
   expect(await card.evaluate(element => getComputedStyle(element).backdropFilter)).toBe('none')
   expect(await card.evaluate(element => getComputedStyle(element).backgroundColor)).toBe('rgb(255, 255, 255)')
-  await expect(page.getByRole('heading', { name: 'Operasi hotspot tugas saya', exact: true })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Ringkasan tugas saya', exact: true })).toBeVisible()
 })

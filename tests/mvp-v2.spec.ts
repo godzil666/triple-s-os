@@ -3,14 +3,33 @@ import { loginAs, ownerController, resetDemo } from './helpers/auth'
 
 test.setTimeout(120_000)
 
+test('hotspot portal shows live package prices and buys the selected package', async ({page,browser}) => {
+  const owner=await ownerController(browser)
+  try { await owner.call('demo','reset',[true]) } finally { await owner.close() }
+  const hotspotId='hotspot-site-demo-cisaat-2'
+  const catalog=await (await page.request.get(`/api/customer/hotspots/${hotspotId}/catalog`)).json()
+  const offer=catalog.offers[0]
+  expect(offer).toBeTruthy()
+  await page.goto(`/wifi/hotspot/${hotspotId}/login`)
+  await page.getByRole('link',{name:'Lihat paket & beli'}).click()
+  await expect(page.getByRole('heading',{name:'Paket tersedia untuk hotspot ini'})).toBeInViewport()
+  const list=page.getByRole('list',{name:'Paket voucher di hotspot ini'})
+  const item=list.getByRole('listitem').filter({hasText:offer.package.name.replace(/^(Reguler|Bulanan) /,'$1 · ')})
+  await expect(item).toContainText(new Intl.NumberFormat('id-ID',{style:'currency',currency:'IDR',maximumFractionDigits:0}).format(offer.priceRp))
+  await expect(item).toContainText('sejak login pertama')
+  await item.getByRole('link',{name:`Beli ${offer.package.name}`}).click()
+  await expect(page).toHaveURL(new RegExp(`/checkout\\?mitra=${catalog.partner.id}&paket=${offer.package.id}&hotspot=${hotspotId}`))
+  await expect(page.getByRole('heading',{name:'Data pembelian Anda'})).toBeVisible()
+})
+
 test('captive hotspot purchase carries context, QR contains only code, and credential activates on the correct hotspot', async ({ page, browser }) => {
   const owner = await ownerController(browser)
   await owner.call('demo','reset',[true])
   try {
     await page.goto('/wifi/hotspot/hotspot-site-demo-cisaat-2/login')
     await expect(page.getByRole('heading',{name:'Hotspot Cisaat 2'})).toBeVisible()
-    await expect(page.getByRole('link',{name:'Beli voucher untuk hotspot ini'})).toBeVisible()
-    await page.getByRole('link',{name:'Beli voucher untuk hotspot ini'}).click()
+    await expect(page.getByRole('link',{name:'Lihat detail semua paket'})).toBeVisible()
+    await page.getByRole('link',{name:'Lihat detail semua paket'}).click()
     await expect(page).toHaveURL(/hotspot=hotspot-site-demo-cisaat-2/)
     await page.getByRole('link',{name:'Pilih Reguler · 3 jam'}).click()
     await expect(page).toHaveURL(/hotspot=hotspot-site-demo-cisaat-2/)
@@ -59,6 +78,8 @@ test('owner operations and assigned admin dashboard show scoped health, alert, i
   await page.getByRole('button',{name:'Lanjut ke acknowledged'}).click()
   await expect(page.locator('#incidents + .operations-list')).toContainText('acknowledged')
   await loginAs(page,'admin');await page.goto('/admin')
+  await expect(page.getByRole('heading',{name:'Ringkasan tugas saya'})).toBeVisible()
+  await page.getByRole('link',{name:'Lihat kesehatan dan waktu pantau'}).click()
   await expect(page.getByRole('heading',{name:'Operasi hotspot tugas saya'})).toBeVisible()
   await expect(page.locator('#health ~ .operations-grid .card')).toHaveCount(1)
   await expect(page.getByRole('link',{name:'Kelola mitra'})).toHaveCount(0)
@@ -88,7 +109,7 @@ test('camera permission failure keeps manual entry available and rejects an inva
   })
   await page.goto('/wifi/hotspot/hotspot-site-demo-cisaat/login')
   await page.getByRole('button',{name:'Scan QR voucher'}).click()
-  await expect(page.getByRole('status')).toContainText('Izin kamera ditolak')
+  await expect(page.getByRole('status').filter({hasText:'Izin kamera ditolak'})).toContainText('Izin kamera ditolak')
   await expect(page.getByLabel('Kode voucher')).toBeVisible()
   await page.getByLabel('Kode voucher').fill('BUKAN-VOUCHER')
   await page.getByRole('button',{name:'Masuk dengan voucher'}).click()
@@ -99,6 +120,8 @@ for (const width of [360,390,768,1024,1440]) test(`V2 captive and operations hav
   await page.setViewportSize({width,height:900})
   await page.goto('/wifi/hotspot/hotspot-site-demo-cisaat-2/login')
   await expect(page.locator('h1')).toBeVisible()
+  await expect(page.getByRole('list',{name:'Paket voucher di hotspot ini'})).toBeVisible()
+  if(process.env.EVIDENCE_DIR)await page.screenshot({path:`${process.env.EVIDENCE_DIR}/portal-paket-${width}.png`,fullPage:true})
   await page.getByLabel('Kode voucher').focus()
   expect(await page.locator(':focus').evaluate(element=>getComputedStyle(element).outlineStyle)).not.toBe('none')
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true)

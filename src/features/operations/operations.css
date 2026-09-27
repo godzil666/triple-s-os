@@ -9,3 +9,17 @@
 .operations-page .flow-actions { flex-wrap: wrap; }
 .operations-result { padding-block: .8rem; border-top: 1px solid rgba(100,130,150,.25); }
 @media (max-width: 600px) { .operations-page .partner-filters { grid-template-columns: 1fr; } .operations-jump { gap: .4rem; } }
+.admin-overview-metrics { margin-block: 1.5rem; }
+.admin-overview-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+.admin-overview-panel { padding: clamp(1.25rem, 2vw, 2rem); }
+.admin-overview-panel h2 { margin-block: .65rem .5rem; }
+.admin-overview-panel > p { margin-bottom: 1.25rem; }
+.admin-overview-panel > a { display: inline-flex; align-items: center; gap: .5rem; min-height: 44px; color: var(--color-primary-dark); font-weight: 750; }
+.admin-overview-sites { display: grid; gap: .5rem; margin-bottom: 1rem; }
+.admin-overview-sites > div { display: flex; justify-content: space-between; align-items: center; gap: 1rem; border-top: 1px solid #dce7e4; padding-block: .75rem; }
+.admin-overview-sites small { display: block; color: var(--color-muted); margin-top: .2rem; }
+.admin-overview-tasks { display: grid; gap: .5rem; }
+.admin-overview-tasks a { display: grid; grid-template-columns: 2rem minmax(0, 1fr) auto; align-items: center; gap: .75rem; padding: .75rem; min-height: 56px; border-radius: 10px; background: #edf5f3; }
+.admin-overview-tasks a:hover { background: #dcefeb; }
+.admin-overview-tasks strong { font-size: 1.2rem; }
+@media (max-width: 800px) { .admin-overview-grid { grid-template-columns: 1fr; } }

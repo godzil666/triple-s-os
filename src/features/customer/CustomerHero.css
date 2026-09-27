@@ -44,3 +44,24 @@
 @media (max-width: 600px) {
   .customer-hero { height: 78svh; min-height: 620px; max-height: 820px; }.hero-inner { padding-top: 105px; padding-bottom: 146px; }.hero-poster, .hero-video { object-position: 60% center; }.hero-copy h1 { font-size: clamp(45px, 12vw, 64px); }.hero-eyebrow { font-size: 10px; letter-spacing: .13em; margin-bottom: 22px; }.hero-description { font-size: 13px; line-height: 1.85; margin-top: 20px; }.hero-cta { margin-top: 24px; padding: 14px 17px; font-size: 12px; min-height: 50px; gap: 22px; }.hero-bottom { width: calc(100% - 36px); bottom: 21px; flex-wrap: wrap; gap: 16px; }.hero-context { background: rgba(155,207,244,.08); padding: 11px 13px; width: 100%; }.hero-context strong { font-size: 11px; }.hero-context span { font-size: 10px; }.hero-media-controls { width: 100%; flex-direction: row; justify-content: space-between; align-items: center; gap: 12px; }.hero-media-caption { max-width: 145px; text-align: right; font-size: 9px; }.hero-media-controls button { font-size: 11px; }.hero-shade { background: linear-gradient(90deg, #030B1CCF, #040D227D), linear-gradient(0deg, #040D31DB, transparent 65%); }
 }
+
+/* The real headline keeps its width and accessible text while the decorative cipher changes. */
+.customer-hero .hero-decoder-line { position: relative; isolation: isolate; --ink: #b5f4e8; --ink-2: #ff4fd8; --ink-3: #4ff8ff; }
+.customer-hero .hero-decoder-real { display: inline-block; animation: hero-decoder-real 7s steps(1) infinite; }
+.customer-hero .hero-decoder-cipher { position: absolute; inset: 0; display: flex; align-items: center; overflow: hidden; white-space: nowrap; pointer-events: none; animation: hero-decoder-cipher-visibility 7s steps(1) infinite; }
+.customer-hero .hero-decoder-cipher::after { display: block; font: 600 .62em/1.1 ui-monospace, 'Cascadia Code', Consolas, monospace; letter-spacing: .025em; content: '▓u#ai d#ri s!n!.'; color: var(--ink-3); animation: hero-decoder-glyphs 7s steps(1) infinite; }
+@keyframes hero-decoder-glyphs {
+  0% { content: '▓u#ai d#ri s!n!.'; color: var(--ink-3); }
+  8% { content: 'mu▒ai d@ri s1ni.'; color: var(--ink-2); }
+  16% { content: 'mul#i da▒i si!i.'; color: var(--ink-3); }
+  24% { content: 'mulai dari s!ni.'; color: var(--ink-2); }
+  32%, 82% { content: 'mulai dari sini.'; color: var(--ink); }
+  88% { content: 'mu1ai d#ri sin!.'; color: var(--ink-3); }
+  94%, 100% { content: '▒u#ai d▒ri s!n!.'; color: var(--ink-2); }
+}
+@keyframes hero-decoder-real { 0%, 32%, 88%, 100% { opacity: 0; } 40%, 82% { opacity: 1; } }
+@keyframes hero-decoder-cipher-visibility { 0%, 32%, 88%, 100% { opacity: 1; } 40%, 82% { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) {
+  .customer-hero .hero-decoder-real { animation: none; opacity: 1; }
+  .customer-hero .hero-decoder-cipher, .customer-hero .hero-decoder-cipher::after { display: none; animation: none; }
+}
