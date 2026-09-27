@@ -6,10 +6,10 @@ Status: **NOT READY** as of 28 September 2026. This is a proposed synthetic clie
 |---|---|
 | Deployment architecture | React/Vite → same-origin Node API → private Supabase PostgreSQL. Vercel Function adapter and versioned migration prepared locally. |
 | Environment | `client-preview` branch; `APP_ENV=client-preview`, `VITE_APP_MODE=client-preview`, server-only pooled database URI and bootstrap account configuration required. No production environment configured. |
-| Git revision | Historical MVP V2 baseline `8da9928` preserved; preparation started from `f10a85f`. Resolve the candidate revision with `git rev-parse HEAD` on `client-preview`. |
+| Git revision | Historical MVP V2 baseline `8da9928` preserved; tested application candidate `97c321b338bdc6ff4d089c4fb8ac9654c3adb5de` is on private `origin/client-preview`. Resolve the latest documentation revision with `git rev-parse HEAD`. |
 | Local QA | Domain 30/30 PASS; server 24/24 PASS (including preview adapter); browser 82/82 PASS after correcting status semantics and focus visibility; typecheck and normal/client-preview builds PASS; artifact verification PASS; production-dependency audit found 0 vulnerabilities. The first browser run failed 6/82 and was superseded by the clean full rerun. |
 | Supabase | `SSS_OS` project exists. Version-controlled migration `20260927203620_client_preview_documents.sql` applied; singleton seed row and SQL write verified; `anon` and `authenticated` cannot read the private schema. Application database connection and concurrency have not been tested remotely. |
-| Vercel/GitHub | GitHub remote is private. Preview branch has not been pushed; Vercel PT. SSS project and HTTPS deployment are not created/verified. |
+| Vercel/GitHub | GitHub remote is private; `client-preview` branch and tested candidate were pushed. Vercel PT. SSS project and HTTPS deployment are not created/verified. |
 | Remote QA | Public, customer, owner, staff, partner, QR, Signal Run, reset and shared-state scenarios: **NOT TESTED**. |
 | Physical devices | Android, iPhone, laptop and physical camera: **NOT TESTED**. See [device checklist](CLIENT_PREVIEW_DEVICE_CHECKLIST.md). |
 

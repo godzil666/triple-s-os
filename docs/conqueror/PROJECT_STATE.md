@@ -11,7 +11,7 @@ Project: PT. Sahabat Sinyal Sejahtera / Triple S OS. Last updated: 28 September 
 
 ## Deployment
 
-- GitHub: private `godzil666/triple-s-os` remote exists; preview branch awaits reviewed candidate commit and push.
+- GitHub: private `godzil666/triple-s-os` remote exists; tested application candidate `97c321b338bdc6ff4d089c4fb8ac9654c3adb5de` was pushed to `client-preview` only. No push to `main`.
 - Vercel: Conqueror Studio team is connected; no PT. SSS project/deployment verified.
 - Supabase: `SSS_OS` project exists and is healthy; private Client Preview schema migrated, seed row and SQL write verified, anonymous/authenticated table reads denied.
 
@@ -25,4 +25,4 @@ QA on the current preparation branch: domain 30/30, server 24/24 including previ
 
 D1–D7 all remain **OPEN**: D1 commercial terms, D2 real voucher inventory, D3 Mayar, D4 router/RADIUS/captive, D5 production identity, D6 WhatsApp, D7 hosting/operations. Current architecture debt: one locked JSONB aggregate is intentionally low-throughput and not a normalized production model; real backup/restore, monitoring, provider webhooks and production identities are absent.
 
-Current blockers: secure preview database URI and bootstrap credentials in Vercel, Vercel project/repository connection, actual application database transactions and remote HTTPS verification. Next objective: complete the candidate commit and private preview-branch push, configure secure Vercel environment variables, then run remote multi-context QA. Do not start M1.2/M1.3 reconciliation, live payment/router/WhatsApp integrations, production domain, or D1–D7 closure in this batch.
+Current blockers: secure preview database URI and bootstrap credentials in Vercel, Vercel project/repository connection, actual application database transactions and remote HTTPS verification. Next objective: configure secure Vercel environment variables and the PT. SSS project, then run remote multi-context QA. Do not start M1.2/M1.3 reconciliation, live payment/router/WhatsApp integrations, production domain, or D1–D7 closure in this batch.
