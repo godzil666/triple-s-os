@@ -1,4 +1,5 @@
 import { basename } from 'node:path'
+import { readFileSync } from 'node:fs'
 import { Pool } from 'pg'
 import type { JsonFiles } from './files.ts'
 
@@ -6,10 +7,26 @@ type Documents = Record<string, unknown>
 
 let pool: Pool | undefined
 
+export function previewPoolOptions(connectionString: string) {
+  const url = new URL(connectionString)
+  // pg-connection-string lets URL SSL parameters replace the supplied ssl object.
+  for (const key of ['sslmode', 'sslrootcert', 'sslcert', 'sslkey', 'ssl']) url.searchParams.delete(key)
+  return {
+    connectionString: url.toString(),
+    max: 1,
+    idleTimeoutMillis: 10_000,
+    connectionTimeoutMillis: 5_000,
+    ssl: {
+      ca: readFileSync(new URL('./certs/supabase-root-2021.crt', import.meta.url), 'utf8'),
+      rejectUnauthorized: true,
+    },
+  }
+}
+
 function databasePool() {
   const connectionString = process.env.SSS_PREVIEW_DATABASE_URL
   if (process.env.APP_ENV !== 'client-preview' || !connectionString) throw new Error('CLIENT_PREVIEW_NOT_CONFIGURED')
-  return pool ??= new Pool({ connectionString, max: 1, idleTimeoutMillis: 10_000, connectionTimeoutMillis: 5_000, ssl: { rejectUnauthorized: true } })
+  return pool ??= new Pool(previewPoolOptions(connectionString))
 }
 
 /** One locked aggregate preserves the existing versioned domain store across serverless instances. */
