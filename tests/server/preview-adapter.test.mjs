@@ -1,6 +1,7 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import { basename } from 'node:path'
+import { Readable } from 'node:stream'
 import { createApplication } from '../../server/application.ts'
 
 function documentFiles(documents) {
@@ -26,6 +27,39 @@ async function listen(server) {
   await new Promise(resolve => server.listen(0, '127.0.0.1', resolve))
   return `http://127.0.0.1:${server.address().port}`
 }
+
+test('serverless requests without a socket support checkout, staff login and voucher login', async () => {
+  const { app } = instance({})
+  app.accounts.create({ username: 'preview-owner', password: 'test-only-long-password', role: 'owner' })
+  async function post(path, data) {
+    const request = Readable.from([JSON.stringify(data)])
+    Object.assign(request, { url: path, method: 'POST', headers: { origin: 'https://preview.example', 'content-type': 'application/json' } })
+    let status, body
+    const headers = new Map()
+    await app.handleRequest(request, {
+      setHeader: (key, value) => headers.set(key, value), getHeader: key => headers.get(key),
+      writeHead: value => { status = value }, end: value => { body = JSON.parse(value) },
+    })
+    return { status, body }
+  }
+  const login = await post('/api/auth/login', { username: 'preview-owner', password: 'test-only-long-password' })
+  assert.equal(login.status, 200)
+  const state = app.store.getSnapshot()
+  const hotspot = state.hotspots[0]
+  const catalogRequest = Readable.from([])
+  Object.assign(catalogRequest, { url: `/api/customer/hotspots/${hotspot.id}/catalog`, method: 'GET', headers: {} })
+  let catalog
+  await app.handleRequest(catalogRequest, { setHeader() {}, getHeader() {}, writeHead() {}, end: value => { catalog = JSON.parse(value) } })
+  const offer = catalog.offers[0]
+  const checkout = await post('/api/customer/checkout', { partnerId: catalog.partner.id, hotspotId: hotspot.id, packageId: offer.package.id, quote: offer.quote, customerName: 'QA Sintetis', customerWhatsapp: '081000000000', channel: 'qris', requestKey: '11111111-1111-4111-8111-111111111111' })
+  assert.equal(checkout.status, 200)
+  assert.ok(checkout.body.order.token)
+  const voucher = state.vouchers.find(v => v.batchId && v.siteId === hotspot.siteId)
+  assert.ok(voucher)
+  const activation = await post('/api/hotspot/login', { siteId: hotspot.siteId, hotspotId: hotspot.id, code: voucher.code })
+  assert.equal(activation.status, 200)
+  assert.equal(activation.body.connected, true)
+})
 
 test('preview document adapter restores state, owner identity, and staff session across instances; reset is shared', async () => {
   const documents = {}

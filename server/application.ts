@@ -84,6 +84,8 @@ export function createApplication({ directory, allowedOrigins, secureCookies = f
     }
     try {
       const path = new URL(request.url ?? '/', 'http://localhost').pathname
+      // Serverless requests need not expose a Node socket. Keep a conservative shared limit.
+      const clientAddress = request.socket?.remoteAddress ?? 'serverless'
       if (!path.startsWith('/api/')) { send(404, { error: 'NOT_FOUND' }); return }
       if (request.method === 'OPTIONS') { send(403, { error: 'FORBIDDEN' }); return }
       const isPost = request.method === 'POST'
@@ -100,7 +102,7 @@ export function createApplication({ directory, allowedOrigins, secureCookies = f
         if(catalogMatch&&!isPost){send(200,customer.catalog(catalogMatch[1]));return}
         const hotspotCatalogMatch=path.match(/^\/api\/customer\/hotspots\/([^/]+)\/catalog$/)
         if(hotspotCatalogMatch&&!isPost){send(200,customer.catalogByHotspot(hotspotCatalogMatch[1]));return}
-        if(path==='/api/customer/checkout'&&isPost){throttle(`checkout:${request.socket.remoteAddress}`,100);send(200,await customer.checkout(data,deviceId));return}
+        if(path==='/api/customer/checkout'&&isPost){throttle(`checkout:${clientAddress}`,100);send(200,await customer.checkout(data,deviceId));return}
         const orderMatch=path.match(/^\/api\/customer\/orders\/([^/]+)(?:\/([^/]+))?$/)
         if(orderMatch) {
           if(!isPost&&!orderMatch[2]){send(200,customer.detail(orderMatch[1],deviceId));return}
@@ -111,7 +113,7 @@ export function createApplication({ directory, allowedOrigins, secureCookies = f
       if (path === '/api/health' && !isPost) { send(200, { ok: true }); return }
       if (path === '/api/auth/session' && !isPost) { send(200, { user, csrfToken: session?.csrf ?? '' }); return }
       if (path === '/api/auth/login' && isPost) {
-        throttle(`login:${request.socket.remoteAddress}`, 100)
+        throttle(`login:${clientAddress}`, 100)
         const username = typeof data.username === 'string' ? data.username.toLowerCase().trim() : ''
         throttle(`account:${username}`, 5)
         if (typeof data.password !== 'string' || data.password.length > 128 || !username || username.length > 80) throw new Error('INVALID_CREDENTIALS')
@@ -182,7 +184,7 @@ export function createApplication({ directory, allowedOrigins, secureCookies = f
         send(200, { voucher: v ? voucherView(v) : null, clockNow: store.getSnapshot().clockNow, connected }); return
       }
       if (path === '/api/hotspot/login' && isPost) {
-        throttle(`voucher:${request.socket.remoteAddress}`, 30)
+        throttle(`voucher:${clientAddress}`, 30)
         const d = device()
         if (typeof data.siteId !== 'string' && typeof data.hotspotId !== 'string') throw new Error('INVALID_VOUCHER')
         const code = typeof data.code === 'string' && data.code.length <= 160 ? data.code.trim().toUpperCase() : ''
