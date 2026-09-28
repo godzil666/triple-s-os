@@ -221,6 +221,9 @@ export function createApplication({ directory, allowedOrigins, secureCookies = f
     } catch (error) {
       const code = error instanceof Error ? error.message : 'INTERNAL_ERROR'
       const status = code === 'PERSISTENCE_UNAVAILABLE' ? 503 : code === 'NOT_FOUND' ? 404 : ['UNAUTHENTICATED','INVALID_CREDENTIALS'].includes(code) ? 401 : code === 'FORBIDDEN' ? 403 : code === 'RATE_LIMITED' ? 429 : /^[A-Z_]+$/.test(code) ? 400 : 500
+      if (status === 500 && process.env.APP_ENV === 'client-preview') {
+        console.error('CLIENT_PREVIEW_APP_FAILURE', error instanceof Error ? error.name : typeof error, error instanceof Error ? error.stack?.split('\n').slice(1, 4).join(' | ') : '')
+      }
       if (status === 429) response.setHeader('Retry-After', '900')
       send(status, { error: status === 500 ? 'INTERNAL_ERROR' : code })
     }
