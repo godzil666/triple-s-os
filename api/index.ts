@@ -62,7 +62,13 @@ export default async function handler(request: IncomingMessage, response: Server
     response.statusCode = result.status
     for (const [name, value] of result.headers) response.setHeader(name, value)
     response.end(result.body)
-  } catch {
+  } catch (error) {
+    const code = error instanceof Error && /^CLIENT_PREVIEW_[A-Z_]+$/.test(error.message)
+      ? error.message
+      : error && typeof error === 'object' && 'code' in error && typeof error.code === 'string' && /^[A-Z0-9_]{1,20}$/.test(error.code)
+        ? error.code
+        : 'UNCLASSIFIED'
+    console.error('CLIENT_PREVIEW_API_FAILURE', code)
     response.statusCode = 503
     response.setHeader('Cache-Control', 'no-store')
     response.setHeader('Content-Type', 'application/json; charset=utf-8')
