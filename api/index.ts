@@ -63,11 +63,15 @@ export default async function handler(request: IncomingMessage, response: Server
     for (const [name, value] of result.headers) response.setHeader(name, value)
     response.end(result.body)
   } catch (error) {
-    const code = error instanceof Error && /^CLIENT_PREVIEW_[A-Z_]+$/.test(error.message)
-      ? error.message
-      : error && typeof error === 'object' && 'code' in error && typeof error.code === 'string' && /^[A-Z0-9_]{1,20}$/.test(error.code)
-        ? error.code
-        : 'UNCLASSIFIED'
+    const message = error instanceof Error ? error.message : ''
+    const rawCode = error && typeof error === 'object' && 'code' in error ? error.code : undefined
+    const code = /^CLIENT_PREVIEW_[A-Z_]+$/.test(message) ? message
+      : typeof rawCode === 'string' && /^[A-Z][A-Z0-9_]{0,63}$/.test(rawCode) ? rawCode
+        : /certificate|\bssl\b|\btls\b/i.test(message) ? 'DATABASE_TLS'
+          : /authentication|\bsasl\b|password/i.test(message) ? 'DATABASE_AUTH'
+            : /timeout|connect|network|host/i.test(message) ? 'DATABASE_CONNECT'
+              : /json|unexpected token/i.test(message) ? 'BOOTSTRAP_FORMAT'
+                : error instanceof TypeError ? 'TYPE_ERROR' : 'UNCLASSIFIED'
     console.error('CLIENT_PREVIEW_API_FAILURE', code)
     response.statusCode = 503
     response.setHeader('Cache-Control', 'no-store')
