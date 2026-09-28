@@ -5,11 +5,14 @@ import type { AccountInput } from '../server/accounts.ts'
 
 export const config = { maxDuration: 30 }
 
-function previewOrigin() {
-  const raw = process.env.SSS_PUBLIC_ORIGIN ?? (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : '')
-  const parsed = new URL(raw)
-  if (parsed.protocol !== 'https:' || parsed.pathname !== '/' || parsed.search || parsed.hash) throw new Error('CLIENT_PREVIEW_ORIGIN_INVALID')
-  return parsed.origin
+export function previewOrigins(env: Record<string, string | undefined> = process.env) {
+  const candidates = [env.SSS_PUBLIC_ORIGIN, ...[env.VERCEL_URL, env.VERCEL_BRANCH_URL].filter(Boolean).map(host => `https://${host}`)].filter(Boolean) as string[]
+  if (!candidates.length) throw new Error('CLIENT_PREVIEW_ORIGIN_INVALID')
+  return [...new Set(candidates.map(raw => {
+    const parsed = new URL(raw)
+    if (parsed.protocol !== 'https:' || parsed.pathname !== '/' || parsed.search || parsed.hash || parsed.username || parsed.password) throw new Error('CLIENT_PREVIEW_ORIGIN_INVALID')
+    return parsed.origin
+  }))]
 }
 
 function bootstrapAccounts(app: ReturnType<typeof createApplication>) {
@@ -42,7 +45,7 @@ export default async function handler(request: IncomingMessage, response: Server
         sessions: new Map(Object.entries(documents['staff-sessions'] as Record<string, Session> ?? {})),
         limits: new Map(Object.entries(documents['rate-limits'] as Record<string, { count: number; expiresAt: number }> ?? {})),
       }
-      const app = createApplication({ directory: 'preview', allowedOrigins: [previewOrigin()], secureCookies: true, files, runtimeState })
+      const app = createApplication({ directory: 'preview', allowedOrigins: previewOrigins(), secureCookies: true, files, runtimeState })
       bootstrapAccounts(app)
       request.url = url
       const headers = new Map<string, number | string | string[]>()
